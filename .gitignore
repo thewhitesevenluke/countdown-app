@@ -1,0 +1,15 @@
+.DS_Store
+
+# Local environment files
+.env
+.env.*
+
+# Dependencies and caches
+node_modules/
+.playwright-cli/
+
+# Local verification artifacts
+output/
+
+# Logs
+*.log

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Countdown</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css?v=rounder-vibe-20260703">
+  </head>
+  <body>
+    <main class="app" aria-label="Countdown app">
+      <section class="countdown-stage" aria-live="polite">
+        <div class="countdown-card" id="countdownCard">
+          <div class="countdown-copy">
+            <p class="selected-title" id="selectedTitle"></p>
+            <div class="countdown-value" id="countdownValue"></div>
+            <p class="countdown-label" id="countdownLabel"></p>
+            <p class="countdown-date" id="countdownDate"></p>
+          </div>
+
+          <div class="progress-panel" aria-label="Time left progress">
+            <div class="progress-ring" id="progressRing">
+              <div class="progress-inner">
+                <span class="progress-value" id="progressValue">0%</span>
+                <span class="progress-label" id="progressLabel">left</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions" aria-label="Object actions">
+          <button class="button button-secondary" id="deleteButton" type="button">
+            Delete option
+          </button>
+          <button class="button button-secondary" id="editButton" type="button">
+            Edit object
+          </button>
+          <button class="button button-primary" id="createButton" type="button">
+            Create new object
+          </button>
+        </div>
+      </section>
+
+      <aside class="options-panel" aria-label="Saved countdown objects">
+        <h1 class="options-title">Options</h1>
+        <div class="options-list" id="optionsList"></div>
+      </aside>
+    </main>
+
+    <dialog class="modal" id="objectDialog" aria-labelledby="objectDialogTitle">
+      <form class="modal-panel" id="objectForm" novalidate>
+        <div class="modal-header">
+          <h2 id="objectDialogTitle">Create new object</h2>
+          <button class="icon-button" id="closeObjectButton" type="button" aria-label="Close object dialog">
+            x
+          </button>
+        </div>
+
+        <label class="field">
+          <span>Title</span>
+          <input id="titleInput" name="title" type="text" autocomplete="off" maxlength="80">
+        </label>
+
+        <label class="field">
+          <span>Target date</span>
+          <input
+            id="dateInput"
+            name="targetDate"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="MM/DD/YYYY"
+          >
+        </label>
+
+        <label class="field">
+          <span>Target time</span>
+          <input
+            id="timeInput"
+            name="targetTime"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Optional, like 10:06 PM"
+          >
+        </label>
+
+        <label class="checkbox-field">
+          <input id="repeatInput" name="repeatsYearly" type="checkbox">
+          <span>Repeat yearly</span>
+        </label>
+
+        <p class="form-error" id="formError" role="alert"></p>
+
+        <div class="modal-actions">
+          <button class="button button-secondary" id="cancelObjectButton" type="button">
+            Cancel
+          </button>
+          <button class="button button-primary" id="saveObjectButton" type="submit">
+            Save object
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="deleteDialog" aria-labelledby="deleteDialogTitle">
+      <form class="modal-panel confirm-panel" method="dialog">
+        <h2 id="deleteDialogTitle">Delete option?</h2>
+        <p id="deleteMessage"></p>
+        <div class="modal-actions">
+          <button class="button button-secondary" id="cancelDeleteButton" type="button">
+            Cancel
+          </button>
+          <button class="button button-danger" id="confirmDeleteButton" type="button">
+            Yes, delete
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
