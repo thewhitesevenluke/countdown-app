@@ -44,12 +44,12 @@ input {
 }
 
 .app {
-  width: min(1120px, calc(100vw - 32px));
+  width: min(1240px, calc(100vw - 32px));
   min-height: 100vh;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(236px, 292px);
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: 32px;
   align-items: center;
   padding: 32px 0;
 }
@@ -65,7 +65,7 @@ input {
   background: var(--surface);
   box-shadow: var(--shadow);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 200px);
+  grid-template-columns: minmax(0, 1fr) minmax(210px, 250px);
   place-items: center;
   gap: clamp(20px, 4vw, 48px);
   padding: clamp(28px, 5vw, 54px);
@@ -131,21 +131,19 @@ input {
 
 .progress-panel {
   width: 100%;
-  min-height: 220px;
+  min-height: 250px;
   display: grid;
   place-items: center;
-  border-left: 2px solid var(--line);
-  border-radius: 34px;
-  background:
-    linear-gradient(145deg, rgba(217, 242, 235, 0.92), rgba(255, 231, 200, 0.72) 62%, rgba(255, 255, 255, 0.5)),
-    var(--surface-soft);
-  padding: 22px 18px;
+  border-left: 2px solid rgba(216, 204, 192, 0.72);
+  border-radius: 0;
+  background: transparent;
+  padding: 18px 0 18px 28px;
 }
 
 .progress-ring {
   --progress: 0deg;
   --progress-value: 0;
-  width: clamp(136px, 16vw, 174px);
+  width: clamp(182px, 18vw, 224px);
   aspect-ratio: 1;
   border-radius: 999px;
   position: relative;
@@ -290,7 +288,7 @@ input:focus-visible {
   border-radius: 34px;
   background: rgba(255, 250, 242, 0.95);
   box-shadow: 0 22px 52px rgba(80, 62, 44, 0.1);
-  padding: 18px 16px;
+  padding: 20px 18px;
   align-self: center;
 }
 
@@ -311,7 +309,7 @@ input:focus-visible {
 
 .option-button {
   width: 100%;
-  min-height: 60px;
+  min-height: 66px;
   border: 2px solid transparent;
   border-radius: 24px;
   padding: 11px 14px;
@@ -320,7 +318,7 @@ input:focus-visible {
   background: transparent;
   cursor: pointer;
   display: grid;
-  grid-template-columns: 8px minmax(0, 1fr);
+  grid-template-columns: 10px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   transition:
@@ -363,8 +361,8 @@ input:focus-visible {
 }
 
 .drag-handle {
-  width: 6px;
-  height: 30px;
+  width: 7px;
+  height: 34px;
   border-radius: 999px;
   opacity: 0.5;
   background: linear-gradient(180deg, rgba(32, 132, 119, 0.18), rgba(225, 147, 78, 0.2));
@@ -595,15 +593,15 @@ input:focus-visible {
   }
 
   .progress-panel {
-    width: min(100%, 240px);
+    width: min(100%, 260px);
     min-height: auto;
-    border-top: 2px solid var(--line);
+    border-top: 2px solid rgba(216, 204, 192, 0.72);
     border-left: 0;
-    padding: 18px;
+    padding: 22px 0 0;
   }
 
   .progress-ring {
-    width: min(150px, 45vw);
+    width: min(188px, 52vw);
   }
 
   .actions {
