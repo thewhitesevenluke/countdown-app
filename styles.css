@@ -144,26 +144,54 @@ input {
 
 .progress-ring {
   --progress: 0deg;
+  --progress-value: 0;
   width: clamp(136px, 16vw, 174px);
   aspect-ratio: 1;
   border-radius: 999px;
-  background:
-    conic-gradient(var(--accent) var(--progress), rgba(255, 255, 255, 0.72) 0),
-    var(--accent-soft);
+  position: relative;
+  background: rgba(255, 255, 255, 0.38);
   display: grid;
   place-items: center;
   box-shadow:
-    inset 0 0 0 2px rgba(30, 117, 108, 0.18),
+    inset 0 0 0 1px rgba(30, 117, 108, 0.12),
     0 18px 38px rgba(47, 62, 57, 0.13);
 }
 
+.progress-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.progress-track,
+.progress-arc {
+  fill: none;
+  stroke-width: 6;
+}
+
+.progress-track {
+  stroke: rgba(255, 255, 255, 0.62);
+}
+
+.progress-arc {
+  stroke: var(--accent);
+  stroke-dasharray: var(--progress-value) 100;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
 .progress-inner {
-  width: 74%;
+  width: 59%;
   aspect-ratio: 1;
   border-radius: 999px;
+  position: relative;
+  z-index: 1;
   background: linear-gradient(180deg, #fffefa, #fff5e8);
-  border: 2px solid rgba(191, 174, 159, 0.72);
-  box-shadow: inset 0 0 0 9px rgba(255, 255, 255, 0.44);
+  border: 1.5px solid rgba(191, 174, 159, 0.62);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.36);
   display: grid;
   place-items: center;
   align-content: center;
@@ -286,18 +314,30 @@ input:focus-visible {
   min-height: 60px;
   border: 2px solid transparent;
   border-radius: 24px;
-  padding: 11px 13px;
+  padding: 11px 14px;
   text-align: left;
   color: var(--ink);
   background: transparent;
   cursor: pointer;
   display: grid;
-  gap: 2px;
+  grid-template-columns: 8px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
 }
 
 .option-button:hover {
   background: var(--surface-strong);
   border-color: rgba(216, 204, 192, 0.9);
+}
+
+.option-button:active {
+  cursor: grabbing;
 }
 
 .option-button.is-selected {
@@ -308,6 +348,39 @@ input:focus-visible {
   box-shadow:
     inset 7px 0 0 var(--accent),
     0 10px 26px rgba(32, 132, 119, 0.12);
+}
+
+.option-button.is-dragging {
+  opacity: 0.58;
+  transform: scale(0.98);
+}
+
+.option-button.is-drop-target {
+  border-color: var(--warm);
+  box-shadow:
+    inset 0 0 0 2px rgba(225, 147, 78, 0.22),
+    0 10px 26px rgba(80, 62, 44, 0.12);
+}
+
+.drag-handle {
+  width: 6px;
+  height: 30px;
+  border-radius: 999px;
+  opacity: 0.5;
+  background: linear-gradient(180deg, rgba(32, 132, 119, 0.18), rgba(225, 147, 78, 0.2));
+  box-shadow: inset 0 0 0 1px rgba(109, 116, 109, 0.16);
+}
+
+.option-button:hover .drag-handle,
+.option-button.is-selected .drag-handle,
+.option-button.is-drop-target .drag-handle {
+  opacity: 0.9;
+}
+
+.option-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
 }
 
 .option-title {
@@ -372,10 +445,15 @@ input:focus-visible {
   height: 38px;
   border: 2px solid var(--line);
   border-radius: 999px;
+  padding: 0;
   color: var(--muted);
   background: var(--surface-strong);
   cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
   font-weight: 900;
+  line-height: 1;
 }
 
 .icon-button:hover {

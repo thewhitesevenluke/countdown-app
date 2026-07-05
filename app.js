@@ -37,11 +37,14 @@ let countdowns = loadCountdowns();
 let selectedId = loadSelectedId();
 let objectDialogMode = "create";
 let editingId = null;
+let draggedId = null;
 
 if (!hasSavedCountdowns && countdowns.length === 0) {
   countdowns = createSeedCountdowns();
   selectedId = countdowns[0].id;
   persist();
+} else {
+  countdowns = normalizeCountdownOrder(countdowns);
 }
 
 if (!countdowns.some((item) => item.id === selectedId)) {
@@ -106,6 +109,36 @@ function isCountdownLike(item) {
   );
 }
 
+function normalizeCountdownOrder(items, now = new Date()) {
+  return applySequentialOrder(
+    [...items].sort((first, second) => {
+      const firstOrder = Number.isFinite(first.order) ? first.order : null;
+      const secondOrder = Number.isFinite(second.order) ? second.order : null;
+
+      if (firstOrder !== null && secondOrder !== null && firstOrder !== secondOrder) {
+        return firstOrder - secondOrder;
+      }
+
+      if (firstOrder !== null && secondOrder === null) {
+        return -1;
+      }
+
+      if (firstOrder === null && secondOrder !== null) {
+        return 1;
+      }
+
+      return compareCountdowns(first, second, now);
+    })
+  );
+}
+
+function applySequentialOrder(items) {
+  return items.map((item, index) => ({
+    ...item,
+    order: index
+  }));
+}
+
 function createSeedCountdowns() {
   const now = new Date().toISOString();
   const today = getLocalDateStart(new Date());
@@ -120,6 +153,7 @@ function createSeedCountdowns() {
       targetDate: formatDateInput(birthday),
       targetTime: "",
       repeatsYearly: true,
+      order: 0,
       createdAt: now,
       updatedAt: now
     },
@@ -129,6 +163,7 @@ function createSeedCountdowns() {
       targetDate: formatDateInput(trip),
       targetTime: "",
       repeatsYearly: false,
+      order: 1,
       createdAt: now,
       updatedAt: now
     },
@@ -138,6 +173,7 @@ function createSeedCountdowns() {
       targetDate: formatDateInput(holiday),
       targetTime: "",
       repeatsYearly: true,
+      order: 2,
       createdAt: now,
       updatedAt: now
     }
@@ -161,12 +197,15 @@ function renderOptions() {
   }
 
   const fragment = document.createDocumentFragment();
-  getSortedCountdowns(countdowns).forEach((countdown) => {
+  getOrderedCountdowns(countdowns).forEach((countdown) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "option-button";
+    button.draggable = true;
+    button.dataset.id = countdown.id;
     button.classList.toggle("is-selected", countdown.id === selectedId);
     button.setAttribute("aria-pressed", String(countdown.id === selectedId));
+    button.setAttribute("aria-label", `${countdown.title}, drag to reorder`);
 
     const title = document.createElement("span");
     title.className = "option-title";
@@ -176,12 +215,25 @@ function renderOptions() {
     meta.className = "option-meta";
     meta.textContent = formatDisplayTarget(countdown, getEffectiveTargetDate(countdown));
 
-    button.append(title, meta);
+    const handle = document.createElement("span");
+    handle.className = "drag-handle";
+    handle.setAttribute("aria-hidden", "true");
+
+    const copy = document.createElement("span");
+    copy.className = "option-copy";
+    copy.append(title, meta);
+
+    button.append(handle, copy);
     button.addEventListener("click", () => {
       selectedId = countdown.id;
       saveSelectedId();
       render();
     });
+    button.addEventListener("dragstart", (event) => handleOptionDragStart(event, countdown.id));
+    button.addEventListener("dragend", handleOptionDragEnd);
+    button.addEventListener("dragover", (event) => handleOptionDragOver(event, countdown.id));
+    button.addEventListener("dragleave", () => button.classList.remove("is-drop-target"));
+    button.addEventListener("drop", (event) => handleOptionDrop(event, countdown.id));
     fragment.append(button);
   });
 
@@ -218,6 +270,73 @@ function getSelectedCountdown() {
 
 function getSortedCountdowns(items, now = new Date()) {
   return [...items].sort((first, second) => compareCountdowns(first, second, now));
+}
+
+function getOrderedCountdowns(items) {
+  return [...items].sort((first, second) => {
+    const firstOrder = Number.isFinite(first.order) ? first.order : Number.MAX_SAFE_INTEGER;
+    const secondOrder = Number.isFinite(second.order) ? second.order : Number.MAX_SAFE_INTEGER;
+
+    if (firstOrder !== secondOrder) {
+      return firstOrder - secondOrder;
+    }
+
+    return first.title.localeCompare(second.title);
+  });
+}
+
+function handleOptionDragStart(event, id) {
+  draggedId = id;
+  event.currentTarget.classList.add("is-dragging");
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", id);
+}
+
+function handleOptionDragEnd() {
+  draggedId = null;
+  document.querySelectorAll(".option-button").forEach((button) => {
+    button.classList.remove("is-dragging", "is-drop-target");
+  });
+}
+
+function handleOptionDragOver(event, targetId) {
+  if (!draggedId || draggedId === targetId) {
+    return;
+  }
+
+  event.preventDefault();
+  event.currentTarget.classList.add("is-drop-target");
+  event.dataTransfer.dropEffect = "move";
+}
+
+function handleOptionDrop(event, targetId) {
+  event.preventDefault();
+  event.currentTarget.classList.remove("is-drop-target");
+
+  const sourceId = draggedId || event.dataTransfer.getData("text/plain");
+  if (!sourceId || sourceId === targetId) {
+    draggedId = null;
+    return;
+  }
+
+  reorderCountdown(sourceId, targetId);
+  draggedId = null;
+}
+
+function reorderCountdown(sourceId, targetId) {
+  const ordered = getOrderedCountdowns(countdowns);
+  const sourceIndex = ordered.findIndex((item) => item.id === sourceId);
+  const targetIndex = ordered.findIndex((item) => item.id === targetId);
+
+  if (sourceIndex === -1 || targetIndex === -1) {
+    return;
+  }
+
+  const [moved] = ordered.splice(sourceIndex, 1);
+  ordered.splice(targetIndex, 0, moved);
+  countdowns = applySequentialOrder(ordered);
+  persist();
+  render();
 }
 
 function compareCountdowns(first, second, now) {
@@ -522,9 +641,10 @@ function handleObjectSave(event) {
     const countdown = {
       id: createId(),
       ...values,
+      order: -1,
       createdAt: now
     };
-    countdowns = [countdown, ...countdowns];
+    countdowns = applySequentialOrder([countdown, ...getOrderedCountdowns(countdowns)]);
     selectedId = countdown.id;
   }
 
@@ -552,7 +672,7 @@ function handleDelete() {
   }
 
   countdowns = countdowns.filter((item) => item.id !== selected.id);
-  selectedId = getSortedCountdowns(countdowns)[0]?.id ?? null;
+  selectedId = getOrderedCountdowns(countdowns)[0]?.id ?? null;
   persist();
   elements.deleteDialog.close();
   render();
@@ -746,6 +866,7 @@ function formatDisplayTarget(countdown, date) {
 function updateProgressRing(percent, value, label) {
   const safePercent = clamp(Math.round(percent), 0, 100);
   elements.progressRing.style.setProperty("--progress", `${safePercent * 3.6}deg`);
+  elements.progressRing.style.setProperty("--progress-value", safePercent);
   elements.progressValue.textContent = value;
   elements.progressLabel.textContent = label;
 }

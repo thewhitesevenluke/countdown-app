@@ -7,7 +7,9 @@ function createElement() {
     textContent: "",
     value: "",
     checked: false,
+    dataset: {},
     disabled: false,
+    draggable: false,
     open: false,
     className: "",
     style: {
@@ -50,6 +52,9 @@ function loadAppContext() {
           elements.set(selector, createElement());
         }
         return elements.get(selector);
+      },
+      querySelectorAll() {
+        return [];
       }
     },
     Intl,
@@ -160,3 +165,34 @@ const sortedIds = Array.from(
 ).map((countdown) => countdown.id);
 
 assert.deepStrictEqual(sortedIds, ["soon", "tomorrow", "future", "past"]);
+
+const manualOrderIds = Array.from(
+  context.normalizeCountdownOrder([
+    {
+      id: "last",
+      title: "Last",
+      targetDate: "2026-07-05",
+      targetTime: "",
+      repeatsYearly: false,
+      order: 2
+    },
+    {
+      id: "first",
+      title: "First",
+      targetDate: "2026-12-25",
+      targetTime: "",
+      repeatsYearly: false,
+      order: 0
+    },
+    {
+      id: "middle",
+      title: "Middle",
+      targetDate: "2026-08-01",
+      targetTime: "",
+      repeatsYearly: false,
+      order: 1
+    }
+  ])
+).map((countdown) => countdown.id);
+
+assert.deepStrictEqual(manualOrderIds, ["first", "middle", "last"]);
