@@ -131,12 +131,13 @@ input {
   border-radius: 0;
   background: transparent;
   padding: 18px 0 18px 28px;
+  transform: translateY(-22px);
 }
 
 .progress-ring {
   --progress: 0deg;
   --progress-value: 0;
-  width: clamp(182px, 18vw, 224px);
+  width: clamp(200px, 20vw, 240px);
   aspect-ratio: 1;
   border-radius: 999px;
   position: relative;
@@ -175,7 +176,7 @@ input {
 }
 
 .progress-inner {
-  width: 68%;
+  width: 74%;
   aspect-ratio: 1;
   border-radius: 999px;
   position: relative;
@@ -595,6 +596,7 @@ input:focus-visible {
     border-top: 0;
     border-left: 0;
     padding: 22px 0 0;
+    transform: none;
   }
 
   .progress-ring {
