@@ -59,7 +59,8 @@ input {
 }
 
 .countdown-card {
-  min-height: clamp(280px, 46vh, 430px);
+  height: clamp(360px, 46vh, 430px);
+  min-height: 360px;
   border: 2px solid var(--line);
   border-radius: 42px;
   background: var(--surface);
@@ -72,14 +73,6 @@ input {
   position: relative;
   overflow: hidden;
   text-align: center;
-}
-
-.countdown-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 8px;
-  background: linear-gradient(90deg, var(--accent), var(--sky), var(--warm), var(--berry));
 }
 
 .countdown-copy {
@@ -134,7 +127,7 @@ input {
   min-height: 250px;
   display: grid;
   place-items: center;
-  border-left: 2px solid rgba(216, 204, 192, 0.72);
+  border-left: 0;
   border-radius: 0;
   background: transparent;
   padding: 18px 0 18px 28px;
@@ -182,13 +175,13 @@ input {
 }
 
 .progress-inner {
-  width: 36%;
+  width: 68%;
   aspect-ratio: 1;
   border-radius: 999px;
   position: relative;
   z-index: 1;
-  background: rgba(255, 250, 242, 0.56);
-  border: 1px solid rgba(191, 174, 159, 0.24);
+  background: rgba(255, 250, 242, 0.72);
+  border: 1px solid rgba(191, 174, 159, 0.28);
   box-shadow: none;
   display: grid;
   place-items: center;
@@ -198,14 +191,14 @@ input {
 
 .progress-value {
   color: var(--accent-strong);
-  font-size: clamp(1.18rem, 2.4vw, 1.62rem);
+  font-size: clamp(2rem, 3.4vw, 2.75rem);
   font-weight: 1000;
 }
 
 .progress-label {
   color: var(--muted);
-  max-width: 54px;
-  font-size: 0.66rem;
+  max-width: 92px;
+  font-size: 0.9rem;
   font-weight: 850;
   line-height: 1.08;
   overflow-wrap: anywhere;
@@ -283,13 +276,15 @@ input:focus-visible {
 }
 
 .options-panel {
-  min-height: clamp(280px, 46vh, 430px);
+  height: clamp(360px, 46vh, 430px);
+  min-height: 360px;
   border: 2px solid var(--line);
   border-radius: 34px;
   background: rgba(255, 250, 242, 0.95);
   box-shadow: 0 22px 52px rgba(80, 62, 44, 0.1);
   padding: 20px 18px;
   align-self: center;
+  transform: translateY(-34px);
 }
 
 .options-title {
@@ -572,8 +567,10 @@ input:focus-visible {
 
   .countdown-card,
   .options-panel {
+    height: auto;
     min-height: auto;
     border-radius: 24px;
+    transform: none;
   }
 
   .countdown-card {
@@ -595,7 +592,7 @@ input:focus-visible {
   .progress-panel {
     width: min(100%, 260px);
     min-height: auto;
-    border-top: 2px solid rgba(216, 204, 192, 0.72);
+    border-top: 0;
     border-left: 0;
     padding: 22px 0 0;
   }
