@@ -182,13 +182,13 @@ input {
 }
 
 .progress-inner {
-  width: 48%;
+  width: 36%;
   aspect-ratio: 1;
   border-radius: 999px;
   position: relative;
   z-index: 1;
-  background: rgba(255, 250, 242, 0.78);
-  border: 1px solid rgba(191, 174, 159, 0.42);
+  background: rgba(255, 250, 242, 0.56);
+  border: 1px solid rgba(191, 174, 159, 0.24);
   box-shadow: none;
   display: grid;
   place-items: center;
@@ -198,14 +198,14 @@ input {
 
 .progress-value {
   color: var(--accent-strong);
-  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-size: clamp(1.18rem, 2.4vw, 1.62rem);
   font-weight: 1000;
 }
 
 .progress-label {
   color: var(--muted);
-  max-width: 72px;
-  font-size: 0.78rem;
+  max-width: 54px;
+  font-size: 0.66rem;
   font-weight: 850;
   line-height: 1.08;
   overflow-wrap: anywhere;
