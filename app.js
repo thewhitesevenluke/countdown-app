@@ -1,5 +1,5 @@
-const STORAGE_KEY = "countdown.objects.v1";
-const SELECTED_KEY = "countdown.selectedId.v1";
+const STORAGE_KEY = "countdown.objects.v2";
+const SELECTED_KEY = "countdown.selectedId.v2";
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const elements = {
@@ -31,21 +31,13 @@ const elements = {
   confirmDeleteButton: document.querySelector("#confirmDeleteButton")
 };
 
-const hasSavedCountdowns = localStorage.getItem(STORAGE_KEY) !== null;
-
 let countdowns = loadCountdowns();
 let selectedId = loadSelectedId();
 let objectDialogMode = "create";
 let editingId = null;
 let draggedId = null;
 
-if (!hasSavedCountdowns && countdowns.length === 0) {
-  countdowns = createSeedCountdowns();
-  selectedId = countdowns[0].id;
-  persist();
-} else {
-  countdowns = normalizeCountdownOrder(countdowns);
-}
+countdowns = normalizeCountdownOrder(countdowns);
 
 if (!countdowns.some((item) => item.id === selectedId)) {
   selectedId = countdowns[0]?.id ?? null;
@@ -53,7 +45,7 @@ if (!countdowns.some((item) => item.id === selectedId)) {
 }
 
 render();
-setInterval(renderSelectedCountdown, 60 * 1000);
+setInterval(render, 60 * 1000);
 
 elements.createButton.addEventListener("click", openCreateDialog);
 elements.editButton.addEventListener("click", openEditDialog);
@@ -139,47 +131,6 @@ function applySequentialOrder(items) {
   }));
 }
 
-function createSeedCountdowns() {
-  const now = new Date().toISOString();
-  const today = getLocalDateStart(new Date());
-  const birthday = addDays(today, 42);
-  const trip = addDays(today, 87);
-  const holiday = new Date(today.getFullYear(), 11, 25);
-
-  return [
-    {
-      id: createId(),
-      title: "Birthday",
-      targetDate: formatDateInput(birthday),
-      targetTime: "",
-      repeatsYearly: true,
-      order: 0,
-      createdAt: now,
-      updatedAt: now
-    },
-    {
-      id: createId(),
-      title: "Vacation",
-      targetDate: formatDateInput(trip),
-      targetTime: "",
-      repeatsYearly: false,
-      order: 1,
-      createdAt: now,
-      updatedAt: now
-    },
-    {
-      id: createId(),
-      title: "Holiday",
-      targetDate: formatDateInput(holiday),
-      targetTime: "",
-      repeatsYearly: true,
-      order: 2,
-      createdAt: now,
-      updatedAt: now
-    }
-  ];
-}
-
 function render() {
   renderOptions();
   renderSelectedCountdown();
@@ -215,6 +166,8 @@ function renderOptions() {
     meta.className = "option-meta";
     meta.textContent = formatDisplayTarget(countdown, getEffectiveTargetDate(countdown));
 
+    const progress = createOptionProgressRing(calculateCountdown(countdown).progressPercent);
+
     const handle = document.createElement("span");
     handle.className = "drag-handle";
     handle.setAttribute("aria-hidden", "true");
@@ -223,7 +176,7 @@ function renderOptions() {
     copy.className = "option-copy";
     copy.append(title, meta);
 
-    button.append(handle, copy);
+    button.append(handle, copy, progress);
     button.addEventListener("click", () => {
       selectedId = countdown.id;
       saveSelectedId();
@@ -238,6 +191,37 @@ function renderOptions() {
   });
 
   elements.optionsList.append(fragment);
+}
+
+function createOptionProgressRing(percent) {
+  const safePercent = clamp(Math.round(percent), 0, 100);
+  const ring = document.createElement("span");
+  ring.className = "option-progress-ring";
+  ring.style.setProperty("--option-progress-value", safePercent);
+  ring.setAttribute("aria-hidden", "true");
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "option-progress-svg");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  svg.setAttribute("focusable", "false");
+
+  const track = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  track.setAttribute("class", "option-progress-track");
+  track.setAttribute("cx", "50");
+  track.setAttribute("cy", "50");
+  track.setAttribute("r", "42");
+  track.setAttribute("pathLength", "100");
+
+  const arc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  arc.setAttribute("class", "option-progress-arc");
+  arc.setAttribute("cx", "50");
+  arc.setAttribute("cy", "50");
+  arc.setAttribute("r", "42");
+  arc.setAttribute("pathLength", "100");
+
+  svg.append(track, arc);
+  ring.append(svg);
+  return ring;
 }
 
 function renderSelectedCountdown() {
@@ -701,10 +685,6 @@ function parseDateInput(value) {
 
 function getLocalDateStart(date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function addDays(date, days) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
 }
 
 function formatDateInput(date) {

@@ -314,7 +314,7 @@ input:focus-visible {
   background: transparent;
   cursor: pointer;
   display: grid;
-  grid-template-columns: 10px minmax(0, 1fr);
+  grid-template-columns: 10px minmax(0, 1fr) 42px;
   align-items: center;
   gap: 12px;
   transition:
@@ -386,6 +386,44 @@ input:focus-visible {
 .option-meta {
   color: var(--muted);
   font-size: 0.82rem;
+}
+
+.option-progress-ring {
+  --option-progress-value: 0;
+  width: 42px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  justify-self: end;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow:
+    inset 0 0 0 1px rgba(30, 117, 108, 0.12),
+    0 7px 15px rgba(47, 62, 57, 0.08);
+}
+
+.option-progress-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.option-progress-track,
+.option-progress-arc {
+  fill: none;
+  stroke-width: 9;
+}
+
+.option-progress-track {
+  stroke: rgba(255, 255, 255, 0.68);
+}
+
+.option-progress-arc {
+  stroke: var(--accent);
+  stroke-dasharray: var(--option-progress-value) 100;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
 }
 
 .empty-options {
