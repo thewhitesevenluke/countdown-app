@@ -408,8 +408,7 @@ input:focus-visible {
   overflow: visible;
 }
 
-.option-progress-track,
-.option-progress-arc {
+.option-progress-track {
   fill: none;
   stroke-width: 9;
 }
@@ -419,7 +418,9 @@ input:focus-visible {
 }
 
 .option-progress-arc {
+  fill: none;
   stroke: var(--accent);
+  stroke-width: 12;
   stroke-dasharray: var(--option-progress-value) 100;
   stroke-linecap: round;
   transform: rotate(-90deg);
