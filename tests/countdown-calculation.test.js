@@ -47,6 +47,7 @@ function loadAppContext() {
       addEventListener() {},
       createDocumentFragment: createElement,
       createElement,
+      createElementNS: createElement,
       querySelector(selector) {
         if (!elements.has(selector)) {
           elements.set(selector, createElement());
@@ -97,6 +98,50 @@ assert.strictEqual(timedResult.value, "2");
 assert.strictEqual(timedResult.label, "hours left");
 assert.strictEqual(timedResult.ringValue, "2");
 assert.strictEqual(timedResult.ringLabel, "hours left");
+
+const nextMinuteResult = context.calculateCountdown(
+  {
+    id: "next-minute",
+    title: "Next Minute",
+    targetDate: "2026-06-30",
+    targetTime: "18:31",
+    repeatsYearly: false
+  },
+  new Date(2026, 5, 30, 18, 30, 30)
+);
+
+assert.strictEqual(nextMinuteResult.value, "1");
+assert.strictEqual(nextMinuteResult.label, "minute left");
+assert.strictEqual(nextMinuteResult.ringValue, "1");
+assert.strictEqual(nextMinuteResult.ringLabel, "minute left");
+
+const currentMinuteResult = context.calculateCountdown(
+  {
+    id: "current-minute",
+    title: "Current Minute",
+    targetDate: "2026-06-30",
+    targetTime: "18:31",
+    repeatsYearly: false
+  },
+  new Date(2026, 5, 30, 18, 31, 20)
+);
+
+assert.strictEqual(currentMinuteResult.value, "1");
+assert.strictEqual(currentMinuteResult.label, "minute left");
+
+const pastMinuteResult = context.calculateCountdown(
+  {
+    id: "past-minute",
+    title: "Past Minute",
+    targetDate: "2026-06-30",
+    targetTime: "18:31",
+    repeatsYearly: false
+  },
+  new Date(2026, 5, 30, 18, 32, 0)
+);
+
+assert.strictEqual(pastMinuteResult.value, "Past");
+assert.strictEqual(pastMinuteResult.label, "has passed");
 
 const dateOnlyResult = context.calculateCountdown(
   {

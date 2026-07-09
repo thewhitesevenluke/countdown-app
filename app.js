@@ -166,7 +166,11 @@ function renderOptions() {
     meta.className = "option-meta";
     meta.textContent = formatDisplayTarget(countdown, getEffectiveTargetDate(countdown));
 
-    const progress = createOptionProgressRing(calculateCountdown(countdown).progressPercent);
+    const result = calculateCountdown(countdown);
+    const progress = createOptionProgressRing(
+      result.progressPercent,
+      formatOptionProgressValue(result)
+    );
 
     const handle = document.createElement("span");
     handle.className = "drag-handle";
@@ -193,7 +197,7 @@ function renderOptions() {
   elements.optionsList.append(fragment);
 }
 
-function createOptionProgressRing(percent) {
+function createOptionProgressRing(percent, value) {
   const safePercent = clamp(Math.round(percent), 0, 100);
   const ring = document.createElement("span");
   ring.className = "option-progress-ring";
@@ -220,8 +224,24 @@ function createOptionProgressRing(percent) {
   arc.setAttribute("pathLength", "100");
 
   svg.append(track, arc);
-  ring.append(svg);
+  const text = document.createElement("span");
+  text.className = "option-progress-value";
+  text.textContent = value;
+
+  ring.append(svg, text);
   return ring;
+}
+
+function formatOptionProgressValue(result) {
+  if (result.daysLeft < 0) {
+    return "0";
+  }
+
+  if (result.daysLeft > 99) {
+    return "99+";
+  }
+
+  return String(result.daysLeft);
 }
 
 function renderSelectedCountdown() {
@@ -451,7 +471,9 @@ function calculateTimedCountdown(countdown, now, today) {
     time.minutes
   );
 
-  if (countdown.repeatsYearly && effectiveDateTime < now) {
+  const targetMinuteEnd = new Date(effectiveDateTime.getTime() + 60 * 1000);
+
+  if (countdown.repeatsYearly && targetMinuteEnd <= now) {
     effectiveDateTime = new Date(
       effectiveDateTime.getFullYear() + 1,
       effectiveDateTime.getMonth(),
@@ -461,9 +483,10 @@ function calculateTimedCountdown(countdown, now, today) {
     );
   }
 
+  const effectiveMinuteEnd = new Date(effectiveDateTime.getTime() + 60 * 1000);
   const diffMs = effectiveDateTime.getTime() - now.getTime();
 
-  if (diffMs < 0) {
+  if (effectiveMinuteEnd <= now) {
     return {
       value: "Past",
       label: "has passed",
@@ -476,21 +499,21 @@ function calculateTimedCountdown(countdown, now, today) {
     };
   }
 
-  if (diffMs < 60 * 1000) {
+  if (effectiveDateTime <= now) {
     return {
-      value: "Now",
-      label: "is the time",
-      isWord: true,
+      value: "1",
+      label: "minute left",
+      isWord: false,
       effectiveDate: effectiveDateTime,
       daysLeft: 0,
-      progressPercent: 0,
-      ringValue: "Now",
-      ringLabel: "is the time"
+      progressPercent: getUnitProgress(1, 60),
+      ringValue: "1",
+      ringLabel: "minute left"
     };
   }
 
   if (diffMs < 60 * 60 * 1000) {
-    const minutesLeft = Math.ceil(diffMs / (60 * 1000));
+    const minutesLeft = Math.max(1, Math.ceil(diffMs / (60 * 1000)));
     return {
       value: String(minutesLeft),
       label: `${pluralize(minutesLeft, "minute")} left`,

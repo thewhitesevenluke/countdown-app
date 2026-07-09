@@ -131,7 +131,7 @@ input {
   border-radius: 0;
   background: transparent;
   padding: 18px 0 18px 28px;
-  transform: translateY(-22px);
+  transform: translate(-14px, 8px);
 }
 
 .progress-ring {
@@ -393,6 +393,7 @@ input:focus-visible {
   width: 42px;
   aspect-ratio: 1;
   border-radius: 999px;
+  position: relative;
   justify-self: end;
   display: grid;
   place-items: center;
@@ -403,6 +404,8 @@ input:focus-visible {
 }
 
 .option-progress-svg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   overflow: visible;
@@ -410,7 +413,7 @@ input:focus-visible {
 
 .option-progress-track {
   fill: none;
-  stroke-width: 9;
+  stroke-width: 12;
 }
 
 .option-progress-track {
@@ -427,11 +430,22 @@ input:focus-visible {
   transform-origin: 50% 50%;
 }
 
+.option-progress-value {
+  position: relative;
+  z-index: 1;
+  color: var(--accent-strong);
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
 .empty-options {
-  min-height: 80px;
+  min-height: 96px;
   display: grid;
   place-items: center;
   color: var(--muted);
+  font-size: clamp(1.05rem, 1.45vw, 1.22rem);
+  font-weight: 850;
   text-align: center;
   border: 2px dashed var(--line);
   border-radius: 16px;
