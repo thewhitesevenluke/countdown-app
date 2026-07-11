@@ -169,7 +169,8 @@ function renderOptions() {
     const result = calculateCountdown(countdown);
     const progress = createOptionProgressRing(
       result.progressPercent,
-      formatOptionProgressValue(result)
+      formatOptionProgressValue(result),
+      formatOptionProgressUnit(result)
     );
 
     const handle = document.createElement("span");
@@ -197,7 +198,7 @@ function renderOptions() {
   elements.optionsList.append(fragment);
 }
 
-function createOptionProgressRing(percent, value) {
+function createOptionProgressRing(percent, value, unit = "") {
   const safePercent = clamp(Math.round(percent), 0, 100);
   const ring = document.createElement("span");
   ring.className = "option-progress-ring";
@@ -226,7 +227,18 @@ function createOptionProgressRing(percent, value) {
   svg.append(track, arc);
   const text = document.createElement("span");
   text.className = "option-progress-value";
-  text.textContent = value;
+
+  const number = document.createElement("span");
+  number.className = "option-progress-number";
+  number.textContent = value;
+  text.append(number);
+
+  if (unit) {
+    const unitLabel = document.createElement("span");
+    unitLabel.className = "option-progress-unit";
+    unitLabel.textContent = unit;
+    text.append(unitLabel);
+  }
 
   ring.append(svg, text);
   return ring;
@@ -243,6 +255,10 @@ function formatOptionProgressValue(result) {
   }
 
   return result.ringValue;
+}
+
+function formatOptionProgressUnit(result) {
+  return result.ringLabel.includes("minute") ? "mins" : "";
 }
 
 function renderSelectedCountdown() {

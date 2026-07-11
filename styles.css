@@ -433,10 +433,22 @@ input:focus-visible {
 .option-progress-value {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   color: var(--accent-strong);
-  font-size: 0.68rem;
   font-weight: 950;
   line-height: 1;
+}
+
+.option-progress-number {
+  font-size: 0.7rem;
+}
+
+.option-progress-unit {
+  margin-top: 1px;
+  font-size: 0.42rem;
+  letter-spacing: 0;
 }
 
 .empty-options {

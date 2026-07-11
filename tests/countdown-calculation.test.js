@@ -105,6 +105,7 @@ assert.strictEqual(timedResult.label, "hours left");
 assert.strictEqual(timedResult.ringValue, "2");
 assert.strictEqual(timedResult.ringLabel, "hours left");
 assert.strictEqual(context.formatOptionProgressValue(timedResult), "2");
+assert.strictEqual(context.formatOptionProgressUnit(timedResult), "");
 
 const nextMinuteResult = context.calculateCountdown(
   {
@@ -122,6 +123,7 @@ assert.strictEqual(nextMinuteResult.label, "minute left");
 assert.strictEqual(nextMinuteResult.ringValue, "1");
 assert.strictEqual(nextMinuteResult.ringLabel, "minute left");
 assert.strictEqual(context.formatOptionProgressValue(nextMinuteResult), "1");
+assert.strictEqual(context.formatOptionProgressUnit(nextMinuteResult), "mins");
 
 const currentMinuteResult = context.calculateCountdown(
   {
