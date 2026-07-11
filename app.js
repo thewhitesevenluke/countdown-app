@@ -233,15 +233,16 @@ function createOptionProgressRing(percent, value) {
 }
 
 function formatOptionProgressValue(result) {
-  if (result.daysLeft < 0) {
+  if (result.ringValue === "Past" || result.daysLeft < 0) {
     return "0";
   }
 
-  if (result.daysLeft > 99) {
+  const numericValue = Number(result.ringValue);
+  if (Number.isFinite(numericValue) && numericValue > 99) {
     return "99+";
   }
 
-  return String(result.daysLeft);
+  return result.ringValue;
 }
 
 function renderSelectedCountdown() {
