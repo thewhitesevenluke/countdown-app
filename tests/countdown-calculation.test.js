@@ -38,6 +38,7 @@ function createElement() {
 function loadAppContext() {
   const elements = new Map();
   const storage = new Map();
+  const intervals = [];
   const context = {
     console,
     crypto: {
@@ -73,7 +74,10 @@ function loadAppContext() {
     requestAnimationFrame(callback) {
       callback();
     },
-    setInterval() {}
+    setInterval(callback, delay) {
+      intervals.push(delay);
+    },
+    __intervals: intervals
   };
 
   vm.createContext(context);
@@ -82,6 +86,8 @@ function loadAppContext() {
 }
 
 const context = loadAppContext();
+
+assert.deepStrictEqual(context.__intervals, [1000]);
 
 const timedResult = context.calculateCountdown(
   {

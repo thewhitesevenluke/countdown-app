@@ -45,7 +45,7 @@ if (!countdowns.some((item) => item.id === selectedId)) {
 }
 
 render();
-setInterval(render, 60 * 1000);
+setInterval(render, 1000);
 
 elements.createButton.addEventListener("click", openCreateDialog);
 elements.editButton.addEventListener("click", openEditDialog);
