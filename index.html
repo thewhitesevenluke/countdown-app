@@ -49,6 +49,20 @@
         <h1 class="options-title">Options</h1>
         <div class="options-list" id="optionsList"></div>
       </aside>
+
+      <section class="calendar-workspace" aria-label="Calendar view">
+        <div class="calendar-workspace-header">
+          <div>
+            <p class="calendar-eyebrow">Calendar view</p>
+            <h2 id="workspaceCalendarTitle">Your countdown calendar</h2>
+          </div>
+          <div class="calendar-workspace-controls">
+            <button class="calendar-nav" id="workspacePreviousMonthButton" type="button" aria-label="Previous calendar month">‹</button>
+            <button class="calendar-nav" id="workspaceNextMonthButton" type="button" aria-label="Next calendar month">›</button>
+          </div>
+        </div>
+        <div class="calendar-board" id="calendarBoard"></div>
+      </section>
     </main>
 
     <dialog class="modal" id="objectDialog" aria-labelledby="objectDialogTitle">
@@ -75,24 +89,7 @@
               inputmode="numeric"
               autocomplete="off"
               placeholder="MM/DD/YYYY"
-              aria-controls="dateCalendar"
-              aria-expanded="false"
             >
-            <button class="calendar-toggle" id="calendarToggle" type="button" aria-label="Choose target date" aria-controls="dateCalendar" aria-expanded="false">
-              <span aria-hidden="true">▦</span>
-            </button>
-          </div>
-          <div class="calendar-popover" id="dateCalendar" hidden>
-            <div class="calendar-header">
-              <button class="calendar-nav" id="previousMonthButton" type="button" aria-label="Previous month">‹</button>
-              <strong id="calendarMonthLabel"></strong>
-              <button class="calendar-nav" id="nextMonthButton" type="button" aria-label="Next month">›</button>
-            </div>
-            <div class="calendar-weekdays" aria-hidden="true">
-              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-            </div>
-            <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Target date calendar"></div>
-            <button class="calendar-today" id="calendarTodayButton" type="button">Today</button>
           </div>
         </div>
 

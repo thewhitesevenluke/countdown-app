@@ -11,6 +11,10 @@ const elements = {
   progressValue: document.querySelector("#progressValue"),
   progressLabel: document.querySelector("#progressLabel"),
   optionsList: document.querySelector("#optionsList"),
+  calendarBoard: document.querySelector("#calendarBoard"),
+  workspaceCalendarTitle: document.querySelector("#workspaceCalendarTitle"),
+  workspacePreviousMonthButton: document.querySelector("#workspacePreviousMonthButton"),
+  workspaceNextMonthButton: document.querySelector("#workspaceNextMonthButton"),
   deleteButton: document.querySelector("#deleteButton"),
   editButton: document.querySelector("#editButton"),
   createButton: document.querySelector("#createButton"),
@@ -21,13 +25,6 @@ const elements = {
   cancelObjectButton: document.querySelector("#cancelObjectButton"),
   titleInput: document.querySelector("#titleInput"),
   dateInput: document.querySelector("#dateInput"),
-  calendarToggle: document.querySelector("#calendarToggle"),
-  dateCalendar: document.querySelector("#dateCalendar"),
-  calendarMonthLabel: document.querySelector("#calendarMonthLabel"),
-  calendarGrid: document.querySelector("#calendarGrid"),
-  previousMonthButton: document.querySelector("#previousMonthButton"),
-  nextMonthButton: document.querySelector("#nextMonthButton"),
-  calendarTodayButton: document.querySelector("#calendarTodayButton"),
   timeInput: document.querySelector("#timeInput"),
   repeatInput: document.querySelector("#repeatInput"),
   formError: document.querySelector("#formError"),
@@ -43,7 +40,7 @@ let selectedId = loadSelectedId();
 let objectDialogMode = "create";
 let editingId = null;
 let draggedId = null;
-let calendarMonth = getLocalDateStart(new Date());
+let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
 countdowns = normalizeCountdownOrder(countdowns);
 
@@ -60,12 +57,8 @@ elements.editButton.addEventListener("click", openEditDialog);
 elements.closeObjectButton.addEventListener("click", closeObjectDialog);
 elements.cancelObjectButton.addEventListener("click", closeObjectDialog);
 elements.objectForm.addEventListener("submit", handleObjectSave);
-elements.calendarToggle.addEventListener("click", toggleCalendar);
-elements.dateInput.addEventListener("focus", openCalendar);
-elements.dateInput.addEventListener("input", syncCalendarToInput);
-elements.previousMonthButton.addEventListener("click", () => shiftCalendarMonth(-1));
-elements.nextMonthButton.addEventListener("click", () => shiftCalendarMonth(1));
-elements.calendarTodayButton.addEventListener("click", () => selectCalendarDate(new Date()));
+elements.workspacePreviousMonthButton.addEventListener("click", () => shiftWorkspaceCalendar(-1));
+elements.workspaceNextMonthButton.addEventListener("click", () => shiftWorkspaceCalendar(1));
 elements.deleteButton.addEventListener("click", openDeleteDialog);
 elements.cancelDeleteButton.addEventListener("click", () => elements.deleteDialog.close());
 elements.confirmDeleteButton.addEventListener("click", handleDelete);
@@ -148,6 +141,7 @@ function applySequentialOrder(items) {
 function render() {
   renderOptions();
   renderSelectedCountdown();
+  renderWorkspaceCalendar();
 }
 
 function renderOptions() {
@@ -606,7 +600,6 @@ function openCreateDialog() {
   elements.objectForm.reset();
   elements.formError.textContent = "";
   elements.dateInput.value = formatFormDate(new Date());
-  syncCalendarToInput();
   showDialog(elements.objectDialog);
   requestAnimationFrame(() => elements.titleInput.focus());
 }
@@ -624,78 +617,63 @@ function openEditDialog() {
   elements.formError.textContent = "";
   elements.titleInput.value = selected.title;
   elements.dateInput.value = formatFormDate(parseDateInput(selected.targetDate));
-  syncCalendarToInput();
   elements.timeInput.value = formatFormTime(selected.targetTime);
   elements.repeatInput.checked = selected.repeatsYearly;
   showDialog(elements.objectDialog);
   requestAnimationFrame(() => elements.titleInput.focus());
 }
 
-function toggleCalendar() {
-  if (elements.dateCalendar.hidden) {
-    openCalendar();
-  } else {
-    closeCalendar();
-  }
-}
-
-function openCalendar() {
-  syncCalendarToInput();
-  elements.dateCalendar.hidden = false;
-  elements.dateInput.setAttribute("aria-expanded", "true");
-  elements.calendarToggle.setAttribute("aria-expanded", "true");
-}
-
-function closeCalendar() {
-  elements.dateCalendar.hidden = true;
-  elements.dateInput.setAttribute("aria-expanded", "false");
-  elements.calendarToggle.setAttribute("aria-expanded", "false");
-}
-
-function syncCalendarToInput() {
-  const parsed = parseFormDate(elements.dateInput.value);
-  if (parsed.ok) {
-    calendarMonth = parseDateInput(parsed.value);
-  }
-  renderCalendar();
-}
-
-function shiftCalendarMonth(offset) {
+function shiftWorkspaceCalendar(offset) {
   calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
-  renderCalendar();
+  renderWorkspaceCalendar();
 }
 
-function selectCalendarDate(date) {
-  elements.dateInput.value = formatFormDate(date);
-  calendarMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-  renderCalendar();
-  closeCalendar();
+function renderWorkspaceCalendar() {
+  const selected = getSelectedCountdown();
+  const selectedValue = selected?.targetDate ?? "";
+  elements.workspaceCalendarTitle.textContent = selected ? `${selected.title}'s calendar` : "Your countdown calendar";
+  elements.calendarBoard.replaceChildren();
+
+  for (let offset = 0; offset < 4; offset += 1) {
+    const monthDate = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
+    const card = document.createElement("article");
+    card.className = "calendar-card";
+    const heading = document.createElement("h3");
+    heading.textContent = new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" }).format(monthDate);
+    card.append(heading);
+
+    const weekdays = document.createElement("div");
+    weekdays.className = "calendar-weekdays";
+    ["S", "M", "T", "W", "T", "F", "S"].forEach((day) => {
+      const label = document.createElement("span");
+      label.textContent = day;
+      weekdays.append(label);
+    });
+    card.append(weekdays);
+
+    const grid = document.createElement("div");
+    grid.className = "calendar-grid";
+    getCalendarDates(monthDate.getFullYear(), monthDate.getMonth()).forEach(({ date, day, isCurrentMonth }) => {
+      const cell = document.createElement("span");
+      cell.className = "calendar-day";
+      cell.textContent = String(day);
+      cell.classList.toggle("is-outside", !isCurrentMonth);
+      cell.classList.toggle("is-selected", formatDateInput(date) === selectedValue);
+      cell.classList.toggle("is-today", formatDateInput(date) === formatDateInput(new Date()));
+      grid.append(cell);
+    });
+    card.append(grid);
+    elements.calendarBoard.append(card);
+  }
 }
 
-function renderCalendar() {
-  const year = calendarMonth.getFullYear();
-  const month = calendarMonth.getMonth();
-  elements.calendarMonthLabel.textContent = new Intl.DateTimeFormat(undefined, {
-    month: "long",
-    year: "numeric"
-  }).format(calendarMonth);
-  elements.calendarGrid.replaceChildren();
-
-  const selected = parseFormDate(elements.dateInput.value);
-  const selectedValue = selected.ok ? selected.value : "";
-  getCalendarDates(year, month).forEach(({ date, day, isCurrentMonth }) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "calendar-day";
-    button.textContent = String(day);
-    button.disabled = !isCurrentMonth;
-    button.setAttribute("role", "gridcell");
-    button.setAttribute("aria-label", formatDisplayDate(date));
-    const value = formatDateInput(date);
-    button.classList.toggle("is-selected", value === selectedValue);
-    button.classList.toggle("is-today", value === formatDateInput(new Date()));
-    button.addEventListener("click", () => selectCalendarDate(date));
-    elements.calendarGrid.append(button);
+function getCalendarDates(year, month) {
+  const firstDay = new Date(year, month, 1).getDay();
+  return Array.from({ length: 42 }, (_, index) => {
+    const dayOffset = index - firstDay;
+    const date = new Date(year, month, dayOffset + 1);
+    const isCurrentMonth = date.getMonth() === month;
+    return { date, day: date.getDate(), isCurrentMonth };
   });
 }
 
@@ -714,7 +692,6 @@ function getCalendarDates(year, month) {
 }
 
 function closeObjectDialog() {
-  closeCalendar();
   elements.objectDialog.close();
 }
 
