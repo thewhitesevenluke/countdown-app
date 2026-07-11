@@ -89,6 +89,11 @@ const context = loadAppContext();
 
 assert.deepStrictEqual(context.__intervals, [1000]);
 
+const calendarDates = context.getCalendarDates(2026, 1);
+assert.strictEqual(calendarDates.length, 42);
+assert.strictEqual(calendarDates.filter((cell) => cell.isCurrentMonth).length, 28);
+assert.strictEqual(calendarDates.find((cell) => cell.isCurrentMonth).day, 1);
+
 const timedResult = context.calculateCountdown(
   {
     id: "timed",

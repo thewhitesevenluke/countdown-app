@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Countdown</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=mini-ring-mins-label-20260711">
+    <link rel="stylesheet" href="styles.css?v=calendar-rounded-ui-20260711">
   </head>
   <body>
     <main class="app" aria-label="Countdown app">
@@ -65,17 +65,36 @@
           <input id="titleInput" name="title" type="text" autocomplete="off" maxlength="80">
         </label>
 
-        <label class="field">
+        <div class="field date-field">
           <span>Target date</span>
-          <input
-            id="dateInput"
-            name="targetDate"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="MM/DD/YYYY"
-          >
-        </label>
+          <div class="date-input-wrap">
+            <input
+              id="dateInput"
+              name="targetDate"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="MM/DD/YYYY"
+              aria-controls="dateCalendar"
+              aria-expanded="false"
+            >
+            <button class="calendar-toggle" id="calendarToggle" type="button" aria-label="Choose target date" aria-controls="dateCalendar" aria-expanded="false">
+              <span aria-hidden="true">▦</span>
+            </button>
+          </div>
+          <div class="calendar-popover" id="dateCalendar" hidden>
+            <div class="calendar-header">
+              <button class="calendar-nav" id="previousMonthButton" type="button" aria-label="Previous month">‹</button>
+              <strong id="calendarMonthLabel"></strong>
+              <button class="calendar-nav" id="nextMonthButton" type="button" aria-label="Next month">›</button>
+            </div>
+            <div class="calendar-weekdays" aria-hidden="true">
+              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+            </div>
+            <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Target date calendar"></div>
+            <button class="calendar-today" id="calendarTodayButton" type="button">Today</button>
+          </div>
+        </div>
 
         <label class="field">
           <span>Target time</span>
@@ -122,6 +141,6 @@
       </form>
     </dialog>
 
-    <script src="app.js?v=mini-ring-mins-label-20260711"></script>
+    <script src="app.js?v=calendar-rounded-ui-20260711"></script>
   </body>
 </html>
