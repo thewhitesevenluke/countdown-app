@@ -8,6 +8,9 @@
 node_modules/
 .playwright-cli/
 
+# Build output
+dist/
+
 # Local verification artifacts
 output/
 

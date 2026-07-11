@@ -1,0 +1,9 @@
+{
+  "name": "countdown-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "test": "node --check app.js && node tests/countdown-calculation.test.js"
+  }
+}
