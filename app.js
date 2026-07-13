@@ -629,13 +629,19 @@ function shiftWorkspaceCalendar(offset) {
 }
 
 function renderWorkspaceCalendar() {
-  const selected = getSelectedCountdown();
-  const selectedValue = selected?.targetDate ?? "";
-  elements.workspaceCalendarTitle.textContent = selected ? `${selected.title}'s calendar` : "Your countdown calendar";
+  elements.workspaceCalendarTitle.textContent = "Calendar";
   elements.calendarBoard.replaceChildren();
 
   for (let offset = 0; offset < 4; offset += 1) {
     const monthDate = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
+    const monthEvents = getCalendarEventsForMonth(monthDate);
+    const eventsByDate = new Map();
+    monthEvents.forEach((event) => {
+      const dateKey = formatDateInput(event.date);
+      const dateEvents = eventsByDate.get(dateKey) ?? [];
+      dateEvents.push(event);
+      eventsByDate.set(dateKey, dateEvents);
+    });
     const card = document.createElement("article");
     card.className = "calendar-card";
     const heading = document.createElement("h3");
@@ -657,24 +663,58 @@ function renderWorkspaceCalendar() {
       const cell = document.createElement("span");
       cell.className = "calendar-day";
       cell.textContent = String(day);
+      const dateEvents = eventsByDate.get(formatDateInput(date)) ?? [];
       cell.classList.toggle("is-outside", !isCurrentMonth);
-      cell.classList.toggle("is-selected", formatDateInput(date) === selectedValue);
+      cell.classList.toggle("has-events", isCurrentMonth && dateEvents.length > 0);
       cell.classList.toggle("is-today", formatDateInput(date) === formatDateInput(new Date()));
+      if (isCurrentMonth && dateEvents.length > 0) {
+        cell.title = dateEvents.map((event) => event.countdown.title).join(", ");
+        cell.setAttribute("aria-label", `${day}: ${cell.title}`);
+        if (dateEvents.length > 1) {
+          const count = document.createElement("span");
+          count.className = "calendar-event-count";
+          count.textContent = String(dateEvents.length);
+          cell.append(count);
+        }
+      }
       grid.append(cell);
     });
     card.append(grid);
+
+    const eventList = document.createElement("div");
+    eventList.className = "calendar-events";
+    monthEvents.forEach((event) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "calendar-event";
+      button.textContent = `${event.date.getDate()} · ${event.countdown.title}`;
+      button.title = `Select ${event.countdown.title}`;
+      button.addEventListener("click", () => {
+        selectedId = event.countdown.id;
+        saveSelectedId();
+        render();
+      });
+      eventList.append(button);
+    });
+    card.append(eventList);
     elements.calendarBoard.append(card);
   }
 }
 
-function getCalendarDates(year, month) {
-  const firstDay = new Date(year, month, 1).getDay();
-  return Array.from({ length: 42 }, (_, index) => {
-    const dayOffset = index - firstDay;
-    const date = new Date(year, month, dayOffset + 1);
-    const isCurrentMonth = date.getMonth() === month;
-    return { date, day: date.getDate(), isCurrentMonth };
-  });
+function getCalendarEventsForMonth(monthDate) {
+  const year = monthDate.getFullYear();
+  const month = monthDate.getMonth();
+
+  return countdowns
+    .map((countdown) => {
+      const target = parseDateInput(countdown.targetDate);
+      const date = countdown.repeatsYearly
+        ? new Date(year, target.getMonth(), target.getDate())
+        : target;
+      return { countdown, date };
+    })
+    .filter((event) => event.date.getFullYear() === year && event.date.getMonth() === month)
+    .sort((first, second) => first.date - second.date || first.countdown.title.localeCompare(second.countdown.title));
 }
 
 function getCalendarDates(year, month) {
