@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Countdown</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=shared-calendar-20260712">
+    <link rel="stylesheet" href="styles.css?v=mobile-actions-calendar-colors-20260713">
   </head>
   <body>
     <main class="app" aria-label="Countdown app">
@@ -34,13 +34,16 @@
 
         <div class="actions" aria-label="Object actions">
           <button class="button button-secondary" id="deleteButton" type="button">
-            Delete option
+            <span class="button-label-desktop">Delete option</span>
+            <span class="button-label-mobile">Delete</span>
           </button>
           <button class="button button-secondary" id="editButton" type="button">
-            Edit object
+            <span class="button-label-desktop">Edit object</span>
+            <span class="button-label-mobile">Edit</span>
           </button>
           <button class="button button-primary" id="createButton" type="button">
-            Create new object
+            <span class="button-label-desktop">Create new object</span>
+            <span class="button-label-mobile">New object</span>
           </button>
         </div>
       </section>
@@ -57,8 +60,8 @@
             <h2 id="workspaceCalendarTitle">Calendar</h2>
           </div>
           <div class="calendar-workspace-controls">
-            <button class="calendar-nav" id="workspacePreviousMonthButton" type="button" aria-label="Previous calendar month">‹</button>
-            <button class="calendar-nav" id="workspaceNextMonthButton" type="button" aria-label="Next calendar month">›</button>
+            <button class="calendar-nav" id="workspacePreviousMonthButton" type="button" aria-label="Previous calendar month"><span aria-hidden="true">‹</span></button>
+            <button class="calendar-nav" id="workspaceNextMonthButton" type="button" aria-label="Next calendar month"><span aria-hidden="true">›</span></button>
           </div>
         </div>
         <div class="calendar-board" id="calendarBoard"></div>
@@ -138,6 +141,6 @@
       </form>
     </dialog>
 
-    <script src="app.js?v=shared-calendar-20260712"></script>
+    <script src="app.js?v=mobile-actions-calendar-colors-20260713"></script>
   </body>
 </html>
