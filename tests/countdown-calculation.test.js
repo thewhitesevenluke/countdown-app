@@ -97,6 +97,14 @@ assert.strictEqual(context.formatDateMask("0102202699"), "01/02/2026");
 assert.strictEqual(context.deleteDateMaskDigit("12/3/", 5), "12//");
 assert.strictEqual(context.deleteDateMaskDigit("1//", 3), "//");
 assert.strictEqual(context.deleteDateMaskDigit("//", 2), "//");
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(context.splitDateDigits("07132026"))),
+  { month: "07", day: "13", year: "2026" }
+);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(context.splitDateDigits("0713"))),
+  { month: "07", day: "13", year: "" }
+);
 
 const calendarDates = context.getCalendarDates(2026, 1);
 assert.strictEqual(calendarDates.length, 42);

@@ -765,8 +765,58 @@ input:focus-visible {
   position: relative;
 }
 
-.date-input-wrap input {
-  padding-right: 54px;
+.date-mask-control {
+  min-height: 48px;
+  border: 2px solid var(--line);
+  border-radius: 22px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--surface-strong);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.date-mask-control:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(30, 104, 97, 0.12);
+}
+
+.field .date-segment {
+  width: 2.6ch;
+  min-height: 44px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 850;
+  outline: 0;
+}
+
+.field .date-segment-year {
+  width: 4.8ch;
+}
+
+.field .date-segment::placeholder {
+  color: #8a948f;
+  font-weight: 700;
+}
+
+.date-separator {
+  width: 0.55em;
+  color: var(--accent-strong);
+  opacity: 0;
+  text-align: center;
+  font-weight: 900;
+  user-select: none;
+  pointer-events: none;
+}
+
+.date-separator.is-active {
+  opacity: 1;
 }
 
 .calendar-toggle {

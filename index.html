@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Countdown</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=protected-date-mask-20260713">
+    <link rel="stylesheet" href="styles.css?v=segmented-date-mask-20260713">
   </head>
   <body>
     <main class="app" aria-label="Countdown app">
@@ -85,14 +85,14 @@
         <div class="field date-field">
           <span>Target date</span>
           <div class="date-input-wrap">
-            <input
-              id="dateInput"
-              name="targetDate"
-              type="text"
-              inputmode="numeric"
-              autocomplete="off"
-              placeholder="MM/DD/YYYY"
-            >
+            <div class="date-mask-control" role="group" aria-label="Target date, month day and year">
+              <input class="date-segment date-segment-month" id="dateMonthInput" type="text" inputmode="numeric" autocomplete="off" maxlength="2" placeholder="MM" aria-label="Month">
+              <span class="date-separator" id="monthDaySeparator" aria-hidden="true">/</span>
+              <input class="date-segment date-segment-day" id="dateDayInput" type="text" inputmode="numeric" autocomplete="off" maxlength="2" placeholder="DD" aria-label="Day">
+              <span class="date-separator" id="dayYearSeparator" aria-hidden="true">/</span>
+              <input class="date-segment date-segment-year" id="dateYearInput" type="text" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="YYYY" aria-label="Year">
+            </div>
+            <input id="dateInput" name="targetDate" type="hidden">
           </div>
         </div>
 
@@ -141,6 +141,6 @@
       </form>
     </dialog>
 
-    <script src="app.js?v=protected-date-mask-20260713"></script>
+    <script src="app.js?v=segmented-date-mask-20260713"></script>
   </body>
 </html>

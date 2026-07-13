@@ -25,6 +25,11 @@ const elements = {
   cancelObjectButton: document.querySelector("#cancelObjectButton"),
   titleInput: document.querySelector("#titleInput"),
   dateInput: document.querySelector("#dateInput"),
+  dateMonthInput: document.querySelector("#dateMonthInput"),
+  dateDayInput: document.querySelector("#dateDayInput"),
+  dateYearInput: document.querySelector("#dateYearInput"),
+  monthDaySeparator: document.querySelector("#monthDaySeparator"),
+  dayYearSeparator: document.querySelector("#dayYearSeparator"),
   timeInput: document.querySelector("#timeInput"),
   repeatInput: document.querySelector("#repeatInput"),
   formError: document.querySelector("#formError"),
@@ -57,8 +62,12 @@ elements.editButton.addEventListener("click", openEditDialog);
 elements.closeObjectButton.addEventListener("click", closeObjectDialog);
 elements.cancelObjectButton.addEventListener("click", closeObjectDialog);
 elements.objectForm.addEventListener("submit", handleObjectSave);
-elements.dateInput.addEventListener("input", handleDateMaskInput);
-elements.dateInput.addEventListener("keydown", handleDateMaskKeydown);
+const dateSegmentInputs = [elements.dateMonthInput, elements.dateDayInput, elements.dateYearInput];
+dateSegmentInputs.forEach((input, index) => {
+  input.addEventListener("input", () => handleDateSegmentInput(index));
+  input.addEventListener("keydown", (event) => handleDateSegmentKeydown(event, index));
+  input.addEventListener("paste", (event) => handleDateSegmentPaste(event, index));
+});
 elements.workspacePreviousMonthButton.addEventListener("click", () => shiftWorkspaceCalendar(-1));
 elements.workspaceNextMonthButton.addEventListener("click", () => shiftWorkspaceCalendar(1));
 elements.deleteButton.addEventListener("click", openDeleteDialog);
@@ -601,7 +610,7 @@ function openCreateDialog() {
   elements.saveObjectButton.textContent = "Save object";
   elements.objectForm.reset();
   elements.formError.textContent = "";
-  elements.dateInput.value = formatFormDate(new Date());
+  setDateSegments(formatFormDate(new Date()));
   showDialog(elements.objectDialog);
   requestAnimationFrame(() => elements.titleInput.focus());
 }
@@ -618,7 +627,7 @@ function openEditDialog() {
   elements.saveObjectButton.textContent = "Save changes";
   elements.formError.textContent = "";
   elements.titleInput.value = selected.title;
-  elements.dateInput.value = formatFormDate(parseDateInput(selected.targetDate));
+  setDateSegments(formatFormDate(parseDateInput(selected.targetDate)));
   elements.timeInput.value = formatFormTime(selected.targetTime);
   elements.repeatInput.checked = selected.repeatsYearly;
   showDialog(elements.objectDialog);
@@ -750,7 +759,7 @@ function handleObjectSave(event) {
 
   if (!dateResult.ok) {
     elements.formError.textContent = dateResult.message;
-    elements.dateInput.focus();
+    focusDateSegments();
     return;
   }
 
@@ -864,6 +873,15 @@ function formatDateMask(value) {
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
 }
 
+function splitDateDigits(value) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  return {
+    month: digits.slice(0, 2),
+    day: digits.slice(2, 4),
+    year: digits.slice(4, 8)
+  };
+}
+
 function deleteDateMaskDigit(value, caretPosition) {
   const digits = value.replace(/\D/g, "").slice(0, 8);
   const digitsBeforeCaret = value.slice(0, caretPosition).replace(/\D/g, "").length;
@@ -875,37 +893,68 @@ function deleteDateMaskDigit(value, caretPosition) {
   return formatDateMask(`${digits.slice(0, digitIndex)}${digits.slice(digitIndex + 1)}`);
 }
 
-function handleDateMaskInput(event) {
-  const input = event.currentTarget;
-  input.value = formatDateMask(input.value);
-  placeDateCaretAtEnd(input);
+function setDateSegments(value) {
+  const segments = splitDateDigits(value);
+  elements.dateMonthInput.value = segments.month;
+  elements.dateDayInput.value = segments.day;
+  elements.dateYearInput.value = segments.year;
+  syncDateMaskValue();
 }
 
-function handleDateMaskKeydown(event) {
-  if (event.key !== "Backspace" || event.currentTarget.selectionStart !== event.currentTarget.selectionEnd) {
+function handleDateSegmentInput(index) {
+  const input = dateSegmentInputs[index];
+  const maxLength = index === 2 ? 4 : 2;
+  input.value = input.value.replace(/\D/g, "").slice(0, maxLength);
+  syncDateMaskValue();
+
+  if (input.value.length === maxLength && dateSegmentInputs[index + 1]) {
+    dateSegmentInputs[index + 1].focus();
+  }
+}
+
+function handleDateSegmentKeydown(event, index) {
+  if (event.key === "/") {
+    event.preventDefault();
+    dateSegmentInputs[index + 1]?.focus();
     return;
   }
 
-  const input = event.currentTarget;
-  const caretPosition = input.selectionStart ?? input.value.length;
-  if (input.value[caretPosition - 1] !== "/") {
+  if (event.key !== "Backspace" || event.currentTarget.value !== "" || index === 0) {
     return;
   }
 
   event.preventDefault();
-  input.value = deleteDateMaskDigit(input.value, caretPosition);
-  placeDateCaretAtEnd(input);
+  const previousInput = dateSegmentInputs[index - 1];
+  previousInput.value = previousInput.value.slice(0, -1);
+  previousInput.focus();
+  syncDateMaskValue();
 }
 
-function placeDateCaretAtEnd(input) {
-  if (typeof input.setSelectionRange !== "function") {
+function handleDateSegmentPaste(event, index) {
+  const pastedDigits = event.clipboardData?.getData("text").replace(/\D/g, "") ?? "";
+  const maxLength = index === 2 ? 4 : 2;
+  if (pastedDigits.length <= maxLength) {
     return;
   }
 
-  requestAnimationFrame(() => {
-    const end = input.value.length;
-    input.setSelectionRange(end, end);
-  });
+  event.preventDefault();
+  setDateSegments(pastedDigits);
+  const lastFilledInput = [...dateSegmentInputs].reverse().find((input) => input.value !== "");
+  lastFilledInput?.focus();
+}
+
+function syncDateMaskValue() {
+  const month = elements.dateMonthInput.value.replace(/\D/g, "").slice(0, 2);
+  const day = elements.dateDayInput.value.replace(/\D/g, "").slice(0, 2);
+  const year = elements.dateYearInput.value.replace(/\D/g, "").slice(0, 4);
+  elements.dateInput.value = `${month}/${day}/${year}`;
+  elements.monthDaySeparator.classList.toggle("is-active", month.length === 2 || day.length > 0 || year.length > 0);
+  elements.dayYearSeparator.classList.toggle("is-active", day.length === 2 || year.length > 0);
+}
+
+function focusDateSegments() {
+  const firstIncomplete = dateSegmentInputs.find((input, index) => input.value.length < (index === 2 ? 4 : 2));
+  (firstIncomplete ?? elements.dateMonthInput).focus();
 }
 
 function parseFormDate(value) {
