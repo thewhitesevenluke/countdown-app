@@ -152,6 +152,11 @@ option {
   font-size: clamp(3.2rem, 7vw, 4.8rem);
   overflow-wrap: normal;
   word-break: normal;
+  white-space: pre-line;
+}
+
+.countdown-value.is-word + .countdown-label {
+  white-space: pre-line;
 }
 
 .countdown-label {
@@ -934,7 +939,15 @@ input:focus-visible {
   }
 
   .countdown-value.is-word {
-    font-size: clamp(2.8rem, 13vw, 4.3rem);
+    width: 100%;
+    font-size: clamp(2.6rem, 11vw, 3.6rem);
+    line-height: 1.04;
+  }
+
+  .countdown-value.is-word + .countdown-label {
+    max-width: 100%;
+    font-size: clamp(1.1rem, 5.5vw, 1.45rem);
+    line-height: 1.28;
   }
 
   .progress-panel {

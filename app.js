@@ -276,9 +276,9 @@ function renderSelectedCountdown() {
 
   if (!selected) {
     elements.selectedTitle.textContent = "";
-    elements.countdownValue.textContent = "No objects";
+    elements.countdownValue.textContent = "No\nobjects";
     elements.countdownValue.classList.add("is-word");
-    elements.countdownLabel.textContent = "Create one whenever you are ready";
+    elements.countdownLabel.textContent = "Create one whenever\nyou are ready";
     elements.countdownDate.textContent = "";
     updateProgressRing(0, "0", "days left");
     return;
