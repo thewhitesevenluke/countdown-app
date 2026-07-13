@@ -4,17 +4,37 @@ import path from "node:path";
 const root = process.cwd();
 const distServer = path.join(root, "dist", "server");
 
-const [html, css, app] = await Promise.all([
+const fontFiles = [
+  ["400", "m-plus-rounded-1c-400.woff2"],
+  ["500", "m-plus-rounded-1c-500.woff2"],
+  ["700", "m-plus-rounded-1c-700.woff2"],
+  ["800", "m-plus-rounded-1c-800.woff2"],
+  ["900", "m-plus-rounded-1c-900.woff2"],
+];
+
+const [html, css, app, ...fonts] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "app.js"), "utf8"),
+  ...fontFiles.map(([, fileName]) => readFile(path.join(root, "assets", "fonts", fileName))),
 ]);
 
-const worker = `const files = {
+const fontEntries = fontFiles
+  .map(([, fileName], index) =>
+    `  "/assets/fonts/${fileName}": { body: decodeBase64(${JSON.stringify(fonts[index].toString("base64"))}), type: "font/woff2" },`
+  )
+  .join("\n");
+
+const worker = `function decodeBase64(value) {
+  return Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
+}
+
+const files = {
   "/": { body: ${JSON.stringify(html)}, type: "text/html; charset=utf-8" },
   "/index.html": { body: ${JSON.stringify(html)}, type: "text/html; charset=utf-8" },
   "/styles.css": { body: ${JSON.stringify(css)}, type: "text/css; charset=utf-8" },
   "/app.js": { body: ${JSON.stringify(app)}, type: "text/javascript; charset=utf-8" },
+${fontEntries}
 };
 
 export default {
