@@ -632,7 +632,7 @@ function renderWorkspaceCalendar() {
   elements.workspaceCalendarTitle.textContent = "Calendar";
   elements.calendarBoard.replaceChildren();
 
-  for (let offset = 0; offset < 4; offset += 1) {
+  for (let offset = 0; offset < 3; offset += 1) {
     const monthDate = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
     const monthEvents = getCalendarEventsForMonth(monthDate);
     const eventsByDate = new Map();
