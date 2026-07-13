@@ -57,6 +57,8 @@ elements.editButton.addEventListener("click", openEditDialog);
 elements.closeObjectButton.addEventListener("click", closeObjectDialog);
 elements.cancelObjectButton.addEventListener("click", closeObjectDialog);
 elements.objectForm.addEventListener("submit", handleObjectSave);
+elements.dateInput.addEventListener("input", handleDateMaskInput);
+elements.dateInput.addEventListener("keydown", handleDateMaskKeydown);
 elements.workspacePreviousMonthButton.addEventListener("click", () => shiftWorkspaceCalendar(-1));
 elements.workspaceNextMonthButton.addEventListener("click", () => shiftWorkspaceCalendar(1));
 elements.deleteButton.addEventListener("click", openDeleteDialog);
@@ -855,6 +857,55 @@ function formatFormDate(date) {
   const day = String(date.getDate()).padStart(2, "0");
   const year = date.getFullYear();
   return `${month}/${day}/${year}`;
+}
+
+function formatDateMask(value) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+}
+
+function deleteDateMaskDigit(value, caretPosition) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  const digitsBeforeCaret = value.slice(0, caretPosition).replace(/\D/g, "").length;
+  if (digitsBeforeCaret === 0) {
+    return formatDateMask(digits);
+  }
+
+  const digitIndex = digitsBeforeCaret - 1;
+  return formatDateMask(`${digits.slice(0, digitIndex)}${digits.slice(digitIndex + 1)}`);
+}
+
+function handleDateMaskInput(event) {
+  const input = event.currentTarget;
+  input.value = formatDateMask(input.value);
+  placeDateCaretAtEnd(input);
+}
+
+function handleDateMaskKeydown(event) {
+  if (event.key !== "Backspace" || event.currentTarget.selectionStart !== event.currentTarget.selectionEnd) {
+    return;
+  }
+
+  const input = event.currentTarget;
+  const caretPosition = input.selectionStart ?? input.value.length;
+  if (input.value[caretPosition - 1] !== "/") {
+    return;
+  }
+
+  event.preventDefault();
+  input.value = deleteDateMaskDigit(input.value, caretPosition);
+  placeDateCaretAtEnd(input);
+}
+
+function placeDateCaretAtEnd(input) {
+  if (typeof input.setSelectionRange !== "function") {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    const end = input.value.length;
+    input.setSelectionRange(end, end);
+  });
 }
 
 function parseFormDate(value) {

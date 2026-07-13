@@ -89,6 +89,15 @@ const context = loadAppContext();
 
 assert.deepStrictEqual(context.__intervals, [1000]);
 
+assert.strictEqual(context.formatDateMask(""), "//");
+assert.strictEqual(context.formatDateMask("07132026"), "07/13/2026");
+assert.strictEqual(context.formatDateMask("07/13/2026"), "07/13/2026");
+assert.strictEqual(context.formatDateMask("12abc312030"), "12/31/2030");
+assert.strictEqual(context.formatDateMask("0102202699"), "01/02/2026");
+assert.strictEqual(context.deleteDateMaskDigit("12/3/", 5), "12//");
+assert.strictEqual(context.deleteDateMaskDigit("1//", 3), "//");
+assert.strictEqual(context.deleteDateMaskDigit("//", 2), "//");
+
 const calendarDates = context.getCalendarDates(2026, 1);
 assert.strictEqual(calendarDates.length, 42);
 assert.strictEqual(calendarDates.filter((cell) => cell.isCurrentMonth).length, 28);
