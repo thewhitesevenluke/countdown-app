@@ -12,10 +12,11 @@ const fontFiles = [
   ["900", "m-plus-rounded-1c-900.woff2"],
 ];
 
-const [html, css, app, ...fonts] = await Promise.all([
+const [html, css, app, favicon, ...fonts] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "app.js"), "utf8"),
+  readFile(path.join(root, "assets", "favicon.svg"), "utf8"),
   ...fontFiles.map(([, fileName]) => readFile(path.join(root, "assets", "fonts", fileName))),
 ]);
 
@@ -34,6 +35,7 @@ const files = {
   "/index.html": { body: ${JSON.stringify(html)}, type: "text/html; charset=utf-8" },
   "/styles.css": { body: ${JSON.stringify(css)}, type: "text/css; charset=utf-8" },
   "/app.js": { body: ${JSON.stringify(app)}, type: "text/javascript; charset=utf-8" },
+  "/assets/favicon.svg": { body: ${JSON.stringify(favicon)}, type: "image/svg+xml" },
 ${fontEntries}
 };
 

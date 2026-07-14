@@ -1,6 +1,6 @@
 @font-face {
   font-family: "M PLUS Rounded 1c";
-  src: url("/assets/fonts/m-plus-rounded-1c-400.woff2") format("woff2");
+  src: url("assets/fonts/m-plus-rounded-1c-400.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: "M PLUS Rounded 1c";
-  src: url("/assets/fonts/m-plus-rounded-1c-500.woff2") format("woff2");
+  src: url("assets/fonts/m-plus-rounded-1c-500.woff2") format("woff2");
   font-style: normal;
   font-weight: 500;
   font-display: swap;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: "M PLUS Rounded 1c";
-  src: url("/assets/fonts/m-plus-rounded-1c-700.woff2") format("woff2");
+  src: url("assets/fonts/m-plus-rounded-1c-700.woff2") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: "M PLUS Rounded 1c";
-  src: url("/assets/fonts/m-plus-rounded-1c-800.woff2") format("woff2");
+  src: url("assets/fonts/m-plus-rounded-1c-800.woff2") format("woff2");
   font-style: normal;
   font-weight: 800;
   font-display: swap;
@@ -32,7 +32,7 @@
 
 @font-face {
   font-family: "M PLUS Rounded 1c";
-  src: url("/assets/fonts/m-plus-rounded-1c-900.woff2") format("woff2");
+  src: url("assets/fonts/m-plus-rounded-1c-900.woff2") format("woff2");
   font-style: normal;
   font-weight: 900;
   font-display: swap;
@@ -40,14 +40,14 @@
 
 :root {
   color-scheme: light;
-  --bg: #f7f2ea;
+  --bg: #f6efe3;
   --surface: #fffaf2;
   --surface-strong: #ffffff;
   --surface-soft: #fff1df;
   --ink: #29231f;
-  --muted: #6d746d;
-  --line: #d8ccc0;
-  --line-strong: #bfae9f;
+  --muted: #5f6a60;
+  --line: #ddd1c2;
+  --line-strong: #c2b1a0;
   --accent: #208477;
   --accent-soft: #d9f2eb;
   --accent-strong: #0e5a52;
@@ -59,8 +59,12 @@
   --sky: #73adc2;
   --danger: #a23b36;
   --danger-soft: #fae4e1;
-  --shadow: 0 28px 80px rgba(80, 62, 44, 0.14);
-  --shadow-tight: 0 14px 34px rgba(80, 62, 44, 0.11);
+  --shadow: 0 10px 28px rgba(84, 64, 42, 0.09);
+  --shadow-tight: 0 4px 12px rgba(84, 64, 42, 0.08);
+  --track: #eae1d0;
+  --radius-lg: 28px;
+  --radius-md: 16px;
+  --radius-sm: 14px;
   --font-rounded:
     "M PLUS Rounded 1c", "Avenir Next Rounded", "SF Pro Rounded", ui-rounded, Inter,
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -76,10 +80,7 @@ body {
   margin: 0;
   font-family: var(--font-rounded);
   color: var(--ink);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 246, 232, 0.66)),
-    linear-gradient(135deg, rgba(32, 132, 119, 0.14), rgba(225, 147, 78, 0.16) 56%, rgba(115, 173, 194, 0.13)),
-    var(--bg);
+  background: var(--bg);
 }
 
 button,
@@ -110,7 +111,7 @@ option {
   height: clamp(410px, 52vh, 500px);
   min-height: 410px;
   border: 2px solid var(--line);
-  border-radius: 42px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
   display: grid;
@@ -143,8 +144,8 @@ option {
 .countdown-value {
   min-height: 128px;
   line-height: 0.94;
-  font-size: clamp(6.2rem, 17vw, 11rem);
-  font-weight: 1000;
+  font-size: clamp(4.5rem, 12vw, 9.5rem);
+  font-weight: 900;
   letter-spacing: 0;
   text-wrap: balance;
 }
@@ -152,7 +153,7 @@ option {
 .countdown-value.is-word {
   min-height: auto;
   max-width: 100%;
-  font-size: clamp(3.2rem, 7vw, 4.8rem);
+  font-size: clamp(2.6rem, 5.5vw, 4rem);
   overflow-wrap: normal;
   word-break: normal;
   white-space: pre-line;
@@ -165,9 +166,9 @@ option {
 .countdown-label {
   min-height: 36px;
   margin: 0;
-  color: #68736a;
-  font-size: clamp(1.35rem, 3vw, 2rem);
-  font-weight: 900;
+  color: var(--muted);
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+  font-weight: 800;
 }
 
 .countdown-date {
@@ -185,23 +186,20 @@ option {
   border-left: 0;
   border-radius: 0;
   background: transparent;
-  padding: 18px 0 18px 28px;
-  transform: translate(-14px, 8px);
+  padding: 0;
 }
 
 .progress-ring {
   --progress: 0deg;
   --progress-value: 0;
-  width: clamp(232px, 23vw, 280px);
+  width: clamp(220px, 22vw, 264px);
   aspect-ratio: 1;
   border-radius: 999px;
   position: relative;
-  background: rgba(255, 255, 255, 0.38);
+  isolation: isolate;
+  background: transparent;
   display: grid;
   place-items: center;
-  box-shadow:
-    inset 0 0 0 1px rgba(30, 117, 108, 0.12),
-    0 18px 38px rgba(47, 62, 57, 0.13);
 }
 
 .progress-svg {
@@ -219,7 +217,7 @@ option {
 }
 
 .progress-track {
-  stroke: rgba(255, 255, 255, 0.62);
+  stroke: var(--track);
 }
 
 .progress-arc {
@@ -236,8 +234,8 @@ option {
   border-radius: 999px;
   position: relative;
   z-index: 1;
-  background: rgba(255, 250, 242, 0.72);
-  border: 1px solid rgba(191, 174, 159, 0.28);
+  background: transparent;
+  border: 0;
   box-shadow: none;
   display: grid;
   place-items: center;
@@ -247,14 +245,14 @@ option {
 
 .progress-value {
   color: var(--accent-strong);
-  font-size: clamp(2.7rem, 4.4vw, 3.75rem);
-  font-weight: 1000;
+  font-size: clamp(3.1rem, 5vw, 4.3rem);
+  font-weight: 900;
 }
 
 .progress-label {
   color: var(--muted);
   max-width: 124px;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 850;
   line-height: 1.08;
   overflow-wrap: anywhere;
@@ -274,7 +272,8 @@ option {
   border-radius: 999px;
   padding: 0 22px;
   cursor: pointer;
-  font-weight: 900;
+  font-weight: 800;
+  font-size: 0.95rem;
   color: var(--ink);
   background: var(--surface-strong);
   box-shadow: var(--shadow-tight);
@@ -292,15 +291,15 @@ option {
 
 .button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 34px rgba(47, 62, 57, 0.14);
+  box-shadow: 0 6px 16px rgba(84, 64, 42, 0.12);
 }
 
 .button:focus-visible,
 .option-button:focus-visible,
 .icon-button:focus-visible,
 input:focus-visible {
-  outline: 4px solid rgba(30, 104, 97, 0.28);
-  outline-offset: 3px;
+  outline: 3px solid rgba(32, 132, 119, 0.4);
+  outline-offset: 2px;
 }
 
 .button:disabled {
@@ -311,17 +310,17 @@ input:focus-visible {
 
 .button-primary {
   color: #ffffff;
-  background: linear-gradient(135deg, var(--accent), #2f9b83);
-  border-color: rgba(14, 90, 82, 0.18);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .button-primary:hover {
-  background: linear-gradient(135deg, var(--accent-strong), var(--accent));
-  border-color: rgba(14, 90, 82, 0.24);
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
 }
 
 .button-secondary {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--surface-strong);
   border-color: var(--line);
 }
 
@@ -336,24 +335,27 @@ input:focus-visible {
 }
 
 .options-panel {
-  height: clamp(410px, 52vh, 500px);
   min-height: 410px;
+  min-width: 0;
   border: 2px solid var(--line);
-  border-radius: 34px;
-  background: rgba(255, 250, 242, 0.95);
-  box-shadow: 0 22px 52px rgba(80, 62, 44, 0.1);
-  padding: 20px 18px;
-  align-self: center;
-  transform: translateY(-34px);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 22px 18px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendar-workspace {
+  --calendar-past: #c94f49;
+  --calendar-past-soft: #fbe8e6;
   grid-column: 1 / -1;
   border: 2px solid var(--line);
-  border-radius: 34px;
+  border-radius: var(--radius-lg);
   padding: 24px;
-  background: rgba(255, 250, 242, 0.9);
-  box-shadow: 0 22px 52px rgba(80, 62, 44, 0.08);
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .calendar-workspace-header {
@@ -393,9 +395,9 @@ input:focus-visible {
 
 .calendar-card {
   min-width: 0;
-  padding: 16px;
+  padding: 18px 16px 16px;
   border: 2px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--radius-md);
   background: var(--surface-strong);
 }
 
@@ -418,37 +420,87 @@ input:focus-visible {
 .calendar-card .calendar-day {
   min-width: 0;
   aspect-ratio: auto;
-  min-height: 30px;
+  min-height: 32px;
   border: 0;
   border-radius: 10px;
-  background: #f5f5f3;
-  font-size: 0.72rem;
+  background: #f7f2e9;
+  font-size: 0.78rem;
   position: relative;
   display: grid;
   place-items: center;
 }
 
 .calendar-card .calendar-day.is-outside {
-  color: #b8beb9;
+  color: #c7bfb0;
   background: transparent;
 }
 
 .calendar-card .calendar-day.has-events {
   color: #ffffff;
   background: var(--accent);
-  box-shadow: 0 0 0 3px rgba(32, 132, 119, 0.14);
+}
+
+.calendar-card .calendar-day.has-events.is-past-event {
+  background: var(--calendar-past);
 }
 
 .calendar-card .calendar-day.is-today:not(.has-events) {
   color: #ffffff;
   background: var(--today);
-  box-shadow: 0 0 0 3px rgba(52, 120, 201, 0.18);
 }
 
 .calendar-card .calendar-day.is-today.has-events {
   box-shadow:
-    0 0 0 3px var(--today-soft),
-    0 0 0 5px var(--today);
+    0 0 0 2px var(--surface-strong),
+    0 0 0 4px var(--today);
+}
+
+.calendar-card span.calendar-day {
+  cursor: default;
+}
+
+.calendar-card span.calendar-day:hover {
+  border-color: transparent;
+  background: #f7f2e9;
+}
+
+.calendar-card span.calendar-day.is-outside:hover {
+  background: transparent;
+}
+
+.calendar-card button.calendar-day {
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+.calendar-card button.calendar-day:hover,
+.calendar-card button.calendar-day:focus-visible {
+  color: #ffffff;
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+  box-shadow: 0 0 0 3px rgba(32, 132, 119, 0.2);
+  transform: translateY(-1px);
+}
+
+.calendar-card button.calendar-day.has-events.is-past-event:hover,
+.calendar-card button.calendar-day.has-events.is-past-event:focus-visible {
+  border-color: var(--calendar-past);
+  background: var(--calendar-past);
+  box-shadow: 0 0 0 3px rgba(201, 79, 73, 0.22);
+}
+
+.calendar-card button.calendar-day.has-events.is-selected-event {
+  border-color: var(--surface-strong);
+  box-shadow:
+    0 0 0 2px var(--surface-strong),
+    0 0 0 5px var(--accent-strong);
+}
+
+.calendar-card button.calendar-day.has-events.is-past-event.is-selected-event {
+  box-shadow:
+    0 0 0 2px var(--surface-strong),
+    0 0 0 5px var(--calendar-past);
 }
 
 .calendar-event-count {
@@ -479,14 +531,14 @@ input:focus-visible {
   max-width: 100%;
   border: 1px solid rgba(32, 132, 119, 0.18);
   border-radius: 999px;
-  padding: 5px 8px;
+  padding: 5px 10px;
   color: var(--accent-strong);
   background: var(--accent-soft);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
-  font-size: 0.66rem;
+  font-size: 0.74rem;
   font-weight: 800;
 }
 
@@ -496,17 +548,47 @@ input:focus-visible {
   background: #c7e6df;
 }
 
+.calendar-event.is-past-event,
+.calendar-event.is-past-event:hover,
+.calendar-event.is-past-event:focus-visible {
+  color: var(--calendar-past);
+  border-color: rgba(201, 79, 73, 0.3);
+  background: var(--calendar-past-soft);
+}
+
+.calendar-event.is-selected,
+.calendar-event.is-selected:hover,
+.calendar-event.is-selected:focus-visible {
+  color: #ffffff;
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+  box-shadow: 0 3px 9px rgba(17, 100, 91, 0.2);
+}
+
+.calendar-event.is-past-event.is-selected,
+.calendar-event.is-past-event.is-selected:hover,
+.calendar-event.is-past-event.is-selected:focus-visible {
+  color: #ffffff;
+  border-color: var(--calendar-past);
+  background: var(--calendar-past);
+  box-shadow: 0 3px 9px rgba(201, 79, 73, 0.22);
+}
+
 .options-title {
   margin: 0 0 14px;
   color: var(--muted);
-  font-size: 0.98rem;
-  font-weight: 850;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .options-list {
   display: grid;
-  gap: 10px;
-  max-height: 430px;
+  gap: 8px;
+  align-content: start;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 2px;
 }
@@ -515,7 +597,7 @@ input:focus-visible {
   width: 100%;
   min-height: 66px;
   border: 2px solid transparent;
-  border-radius: 24px;
+  border-radius: var(--radius-md);
   padding: 11px 14px;
   text-align: left;
   color: var(--ink);
@@ -544,12 +626,7 @@ input:focus-visible {
 
 .option-button.is-selected {
   border-color: var(--accent);
-  background:
-    linear-gradient(90deg, rgba(217, 242, 235, 0.98), rgba(255, 231, 200, 0.7)),
-    var(--accent-soft);
-  box-shadow:
-    inset 7px 0 0 var(--accent),
-    0 10px 26px rgba(32, 132, 119, 0.12);
+  background: var(--accent-soft);
 }
 
 .option-button.is-dragging {
@@ -559,18 +636,15 @@ input:focus-visible {
 
 .option-button.is-drop-target {
   border-color: var(--warm);
-  box-shadow:
-    inset 0 0 0 2px rgba(225, 147, 78, 0.22),
-    0 10px 26px rgba(80, 62, 44, 0.12);
+  box-shadow: inset 0 0 0 2px rgba(225, 147, 78, 0.22);
 }
 
 .drag-handle {
-  width: 7px;
-  height: 34px;
+  width: 6px;
+  height: 30px;
   border-radius: 999px;
-  opacity: 0.5;
-  background: linear-gradient(180deg, rgba(32, 132, 119, 0.18), rgba(225, 147, 78, 0.2));
-  box-shadow: inset 0 0 0 1px rgba(109, 116, 109, 0.16);
+  opacity: 0.6;
+  background: var(--line);
 }
 
 .option-button:hover .drag-handle,
@@ -602,13 +676,11 @@ input:focus-visible {
   aspect-ratio: 1;
   border-radius: 999px;
   position: relative;
+  isolation: isolate;
   justify-self: end;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.42);
-  box-shadow:
-    inset 0 0 0 1px rgba(30, 117, 108, 0.12),
-    0 7px 15px rgba(47, 62, 57, 0.08);
+  background: transparent;
 }
 
 .option-progress-svg {
@@ -625,7 +697,7 @@ input:focus-visible {
 }
 
 .option-progress-track {
-  stroke: rgba(255, 255, 255, 0.68);
+  stroke: var(--track);
 }
 
 .option-progress-arc {
@@ -676,7 +748,7 @@ input:focus-visible {
   width: min(430px, calc(100vw - 32px));
   max-height: calc(100vh - 24px);
   border: 0;
-  border-radius: 34px;
+  border-radius: var(--radius-lg);
   padding: 0;
   background: transparent;
   overflow: hidden;
@@ -690,12 +762,12 @@ input:focus-visible {
   max-height: calc(100vh - 24px);
   overflow-y: auto;
   border: 2px solid var(--line);
-  border-radius: 34px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
   display: grid;
-  gap: 16px;
-  padding: 24px;
+  gap: 18px;
+  padding: 28px;
 }
 
 .modal-header {
@@ -743,7 +815,7 @@ input:focus-visible {
   width: 100%;
   min-height: 48px;
   border: 2px solid var(--line);
-  border-radius: 22px;
+  border-radius: var(--radius-sm);
   padding: 0 14px;
   color: var(--ink);
   background: var(--surface-strong);
@@ -768,7 +840,7 @@ input:focus-visible {
 .date-mask-control {
   min-height: 48px;
   border: 2px solid var(--line);
-  border-radius: 22px;
+  border-radius: var(--radius-sm);
   padding: 0 14px;
   display: flex;
   align-items: center;
@@ -848,7 +920,7 @@ input:focus-visible {
   margin-top: 10px;
   padding: 16px;
   border: 2px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--radius-md);
   background: var(--surface-strong);
   box-shadow: var(--shadow-tight);
 }
@@ -913,7 +985,7 @@ input:focus-visible {
   border-radius: 12px;
   padding: 0;
   color: var(--ink);
-  background: #f5f5f3;
+  background: #f7f2e9;
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 850;
@@ -925,7 +997,7 @@ input:focus-visible {
 }
 
 .calendar-day:disabled {
-  color: #b8beb9;
+  color: #c7bfb0;
   background: transparent;
   cursor: default;
 }
@@ -1014,7 +1086,7 @@ input:focus-visible {
 
 .form-error:not(:empty) {
   border: 2px solid rgba(162, 59, 54, 0.26);
-  border-radius: 22px;
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
   background: var(--danger-soft);
 }
@@ -1097,11 +1169,10 @@ input:focus-visible {
     gap: 8px;
     margin: 14px auto 0;
     padding: 8px;
-    border: 1px solid rgba(191, 174, 159, 0.56);
-    border-radius: 26px;
-    background: rgba(255, 250, 242, 0.9);
-    box-shadow: 0 16px 38px rgba(58, 52, 47, 0.18);
-    backdrop-filter: blur(14px);
+    border: 2px solid var(--line);
+    border-radius: 24px;
+    background: var(--surface);
+    box-shadow: 0 10px 30px rgba(58, 52, 47, 0.16);
     transform: translateX(-50%);
   }
 
@@ -1135,15 +1206,14 @@ input:focus-visible {
 
   .modal-actions {
     position: sticky;
-    bottom: -24px;
+    bottom: -28px;
     z-index: 2;
     display: grid;
     grid-template-columns: 1fr;
-    margin: 0 -24px -24px;
-    padding: 12px 24px calc(12px + env(safe-area-inset-bottom));
+    margin: 0 -28px -28px;
+    padding: 12px 28px calc(12px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--line);
-    background: rgba(255, 250, 242, 0.96);
-    backdrop-filter: blur(12px);
+    background: var(--surface);
   }
 }
 

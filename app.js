@@ -201,11 +201,7 @@ function renderOptions() {
     copy.append(title, meta);
 
     button.append(handle, copy, progress);
-    button.addEventListener("click", () => {
-      selectedId = countdown.id;
-      saveSelectedId();
-      render();
-    });
+    button.addEventListener("click", () => selectCountdown(countdown.id));
     button.addEventListener("dragstart", (event) => handleOptionDragStart(event, countdown.id));
     button.addEventListener("dragend", handleOptionDragEnd);
     button.addEventListener("dragover", (event) => handleOptionDragOver(event, countdown.id));
@@ -306,6 +302,27 @@ function renderSelectedCountdown() {
 
 function getSelectedCountdown() {
   return countdowns.find((item) => item.id === selectedId) ?? null;
+}
+
+function selectCountdown(id, { reveal = false } = {}) {
+  if (!countdowns.some((item) => item.id === id)) {
+    return;
+  }
+
+  selectedId = id;
+  saveSelectedId();
+  render();
+
+  if (!reveal) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    const selectedOption = [...document.querySelectorAll(".option-button")]
+      .find((button) => button.dataset.id === id);
+    selectedOption?.scrollIntoView({ behavior: "smooth", block: "center" });
+    selectedOption?.focus({ preventScroll: true });
+  });
 }
 
 function getSortedCountdowns(items, now = new Date()) {
@@ -437,14 +454,14 @@ function calculateCountdown(countdown, now = new Date()) {
 
   if (daysLeft < 0) {
     return {
-      value: "Past",
+      value: "This event",
       label: "has passed",
       isWord: true,
       effectiveDate,
       daysLeft,
       progressPercent: 0,
       ringValue: "Past",
-      ringLabel: "has passed"
+      ringLabel: ""
     };
   }
 
@@ -524,14 +541,14 @@ function calculateTimedCountdown(countdown, now, today) {
 
   if (effectiveMinuteEnd <= now) {
     return {
-      value: "Past",
+      value: "This event",
       label: "has passed",
       isWord: true,
       effectiveDate: effectiveDateTime,
       daysLeft: Math.ceil(diffMs / MS_PER_DAY),
       progressPercent: 0,
       ringValue: "Past",
-      ringLabel: "has passed"
+      ringLabel: ""
     };
   }
 
@@ -642,6 +659,7 @@ function shiftWorkspaceCalendar(offset) {
 function renderWorkspaceCalendar() {
   elements.workspaceCalendarTitle.textContent = "Calendar";
   elements.calendarBoard.replaceChildren();
+  const now = new Date();
 
   for (let offset = 0; offset < 3; offset += 1) {
     const monthDate = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
@@ -671,16 +689,36 @@ function renderWorkspaceCalendar() {
     const grid = document.createElement("div");
     grid.className = "calendar-grid";
     getCalendarDates(monthDate.getFullYear(), monthDate.getMonth()).forEach(({ date, day, isCurrentMonth }) => {
-      const cell = document.createElement("span");
+      const dateEvents = eventsByDate.get(formatDateInput(date)) ?? [];
+      const hasEvents = isCurrentMonth && dateEvents.length > 0;
+      const hasOnlyPastEvents = hasEvents && dateEvents.every((event) => isCalendarEventPast(event, now));
+      const cell = document.createElement(hasEvents ? "button" : "span");
       cell.className = "calendar-day";
       cell.textContent = String(day);
-      const dateEvents = eventsByDate.get(formatDateInput(date)) ?? [];
+      if (hasEvents) {
+        cell.type = "button";
+      }
       cell.classList.toggle("is-outside", !isCurrentMonth);
-      cell.classList.toggle("has-events", isCurrentMonth && dateEvents.length > 0);
+      cell.classList.toggle("has-events", hasEvents);
+      cell.classList.toggle("is-past-event", hasOnlyPastEvents);
       cell.classList.toggle("is-today", formatDateInput(date) === formatDateInput(new Date()));
-      if (isCurrentMonth && dateEvents.length > 0) {
+      cell.classList.toggle(
+        "is-selected-event",
+        hasEvents && dateEvents.some((event) => event.countdown.id === selectedId)
+      );
+      if (hasEvents) {
         cell.title = dateEvents.map((event) => event.countdown.title).join(", ");
-        cell.setAttribute("aria-label", `${day}: ${cell.title}`);
+        cell.setAttribute("aria-label", `${day}: ${cell.title}. Select countdown`);
+        cell.setAttribute(
+          "aria-pressed",
+          String(dateEvents.some((event) => event.countdown.id === selectedId))
+        );
+        cell.addEventListener("click", () => {
+          const eventId = getCalendarCellSelectionId(dateEvents, selectedId);
+          if (eventId) {
+            selectCountdown(eventId, { reveal: true });
+          }
+        });
         if (dateEvents.length > 1) {
           const count = document.createElement("span");
           count.className = "calendar-event-count";
@@ -700,16 +738,38 @@ function renderWorkspaceCalendar() {
       button.className = "calendar-event";
       button.textContent = `${event.date.getDate()} · ${event.countdown.title}`;
       button.title = `Select ${event.countdown.title}`;
-      button.addEventListener("click", () => {
-        selectedId = event.countdown.id;
-        saveSelectedId();
-        render();
-      });
+      button.classList.toggle("is-past-event", isCalendarEventPast(event, now));
+      button.classList.toggle("is-selected", event.countdown.id === selectedId);
+      button.setAttribute("aria-pressed", String(event.countdown.id === selectedId));
+      button.addEventListener("click", () => selectCountdown(event.countdown.id, { reveal: true }));
       eventList.append(button);
     });
     card.append(eventList);
     elements.calendarBoard.append(card);
   }
+}
+
+function getCalendarCellSelectionId(events, currentSelectedId) {
+  if (events.length === 0) {
+    return null;
+  }
+
+  const selectedEvent = events.find((event) => event.countdown.id === currentSelectedId);
+  return selectedEvent?.countdown.id ?? events[0].countdown.id;
+}
+
+function isCalendarEventPast(event, now = new Date()) {
+  const time = parseStoredTime(event.countdown.targetTime);
+  const eventEnd = new Date(
+    event.date.getFullYear(),
+    event.date.getMonth(),
+    event.date.getDate(),
+    time?.hours ?? 23,
+    time?.minutes ?? 59,
+    time ? 59 : 59,
+    999
+  );
+  return eventEnd < now;
 }
 
 function getCalendarEventsForMonth(monthDate) {

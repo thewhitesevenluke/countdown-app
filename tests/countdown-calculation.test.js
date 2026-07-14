@@ -111,6 +111,28 @@ assert.strictEqual(calendarDates.length, 42);
 assert.strictEqual(calendarDates.filter((cell) => cell.isCurrentMonth).length, 28);
 assert.strictEqual(calendarDates.find((cell) => cell.isCurrentMonth).day, 1);
 
+const calendarCellEvents = [
+  { countdown: { id: "first-event" } },
+  { countdown: { id: "second-event" } }
+];
+assert.strictEqual(context.getCalendarCellSelectionId(calendarCellEvents, null), "first-event");
+assert.strictEqual(context.getCalendarCellSelectionId(calendarCellEvents, "second-event"), "second-event");
+assert.strictEqual(context.getCalendarCellSelectionId([], "second-event"), null);
+
+const dateOnlyCalendarEvent = {
+  countdown: { targetTime: "" },
+  date: new Date(2026, 6, 13)
+};
+assert.strictEqual(context.isCalendarEventPast(dateOnlyCalendarEvent, new Date(2026, 6, 13, 22, 0)), false);
+assert.strictEqual(context.isCalendarEventPast(dateOnlyCalendarEvent, new Date(2026, 6, 14, 0, 0)), true);
+
+const timedCalendarEvent = {
+  countdown: { targetTime: "10:06" },
+  date: new Date(2026, 6, 13)
+};
+assert.strictEqual(context.isCalendarEventPast(timedCalendarEvent, new Date(2026, 6, 13, 10, 6, 30)), false);
+assert.strictEqual(context.isCalendarEventPast(timedCalendarEvent, new Date(2026, 6, 13, 10, 7, 0)), true);
+
 const timedResult = context.calculateCountdown(
   {
     id: "timed",
@@ -172,8 +194,10 @@ const pastMinuteResult = context.calculateCountdown(
   new Date(2026, 5, 30, 18, 32, 0)
 );
 
-assert.strictEqual(pastMinuteResult.value, "Past");
+assert.strictEqual(pastMinuteResult.value, "This event");
 assert.strictEqual(pastMinuteResult.label, "has passed");
+assert.strictEqual(pastMinuteResult.ringValue, "Past");
+assert.strictEqual(pastMinuteResult.ringLabel, "");
 
 const dateOnlyResult = context.calculateCountdown(
   {
@@ -188,6 +212,22 @@ const dateOnlyResult = context.calculateCountdown(
 
 assert.strictEqual(dateOnlyResult.value, "Today");
 assert.strictEqual(dateOnlyResult.label, "is the day");
+
+const pastDateOnlyResult = context.calculateCountdown(
+  {
+    id: "past-date-only",
+    title: "Past Date Only",
+    targetDate: "2026-06-29",
+    targetTime: "",
+    repeatsYearly: false
+  },
+  new Date(2026, 5, 30, 18, 30)
+);
+
+assert.strictEqual(pastDateOnlyResult.value, "This event");
+assert.strictEqual(pastDateOnlyResult.label, "has passed");
+assert.strictEqual(pastDateOnlyResult.ringValue, "Past");
+assert.strictEqual(pastDateOnlyResult.ringLabel, "");
 
 const tomorrowResult = context.calculateCountdown(
   {
